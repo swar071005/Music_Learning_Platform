@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NaadStudio – Welcome</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0b0e14;
+  --surface: #121722;
+  --surface2: #1a2130;
+
+  --gold: #c9a24a;
+  --gold-light: #f2c86b;
+  --gold-dim: rgba(201,162,74,0.12);
+
+  --accent: #ff7a18;
+
+  --text: #f5f0e6;
+  --text-muted: #a89f91;
+  --text-dim: #6f675b;
+
+  --border: rgba(201,162,74,0.2);
+  --glow: 0 0 60px rgba(201,162,74,0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Crimson Pro', serif;
+  background: radial-gradient(circle at top, #111827, #02040a);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* GRID BG */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201,162,74,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,162,74,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  background: rgba(10, 14, 25, 0.75);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'Cinzel', serif;
+  font-size: 20px;
+  letter-spacing: 4px;
+  color: var(--gold-light);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 40px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--gold-light);
+  letter-spacing: 3px;
+}
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 40px 80px;
+}
+
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 30px;
+}
+
+.hero-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(52px, 9vw, 110px);
+  letter-spacing: 8px;
+  background: linear-gradient(135deg,#f2c86b,#ff7a18,#c9a24a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 40px rgba(201,162,74,0.2);
+}
+
+.hero-subtitle-devanagari {
+  font-size: 28px;
+  color: rgba(201,162,74,0.6);
+  margin: 16px 0;
+}
+
+.hero-meaning {
+  font-size: 14px;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-bottom: 40px;
+}
+
+/* WAVE */
+.wave-display {
+  display: flex;
+  height: 40px;
+  margin: 20px 0 40px;
+}
+
+.wave-bar {
+  width: 4px;
+  margin: 0 2px;
+  border-radius: 10px;
+  background: linear-gradient(to top, var(--gold), var(--gold-light));
+  animation: wave 1.1s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%,100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+.hero-desc {
+  font-size: 18px;
+  max-width: 600px;
+  color: var(--text-muted);
+  line-height: 1.9;
+  margin-bottom: 50px;
+}
+
+/* BUTTONS */
+.btn-row { display: flex; gap: 20px; }
+
+.btn-primary {
+  padding: 16px 40px;
+  border-radius: 8px;
+  background: linear-gradient(135deg,#c9a24a,#ff7a18);
+  color: #000;
+  text-decoration: none;
+  font-family: 'Cinzel';
+  letter-spacing: 2px;
+  transition: 0.3s;
+}
+
+.btn-primary:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 40px rgba(255,122,24,0.3);
+}
+
+.btn-outline {
+  padding: 16px 40px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  color: var(--gold-light);
+  text-decoration: none;
+}
+
+.btn-outline:hover {
+  background: rgba(201,162,74,0.1);
+}
+
+/* SECTION */
+.section-divider {
+  margin: 60px auto;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+/* CARDS */
+.mood-grid {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.mood-card {
+  width: 240px;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  background: linear-gradient(145deg,#121722,#1a2130);
+  border: 1px solid var(--border);
+  transition: 0.4s;
+  text-decoration: none;
+  color: var(--text);
+}
+
+.mood-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: var(--glow);
+  border-color: var(--gold);
+}
+
+.mood-icon {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.mood-card h3 {
+  color: var(--gold-light);
+  margin-bottom: 8px;
+}
+
+/* FEATURE */
+.feature-card {
+  max-width: 700px;
+  margin: 80px auto;
+  padding: 50px;
+  border-radius: 12px;
+  background: linear-gradient(145deg,#121722,#1a2130);
+  border: 1px solid var(--border);
+  text-align: center;
+  box-shadow: 0 10px 50px rgba(0,0,0,0.6);
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* FOOTER */
+footer {
+  padding: 40px;
+  border-top: 1px solid var(--border);
+  display: flex;00000
+  justify-content: space-between;
+}
+
+.footer-logo {
+  font-family: 'Cinzel';
+  color: var(--gold-light);
+}
+
+.footer-copy {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+  <a href="home.html" class="nav-logo">NAADSTUDIO</a>
+  <ul class="nav-links">
+    <li><a href="home.html">Home</a></li>
+    <li><a href="index.html">Riyaz</a></li>
+    <li><a href="analyzer.html">Analyzer</a></li>
+    
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-eyebrow">Indian Classical Music Practice</div>
+  <h1 class="hero-title">NAAD<br>STUDIO</h1>
+  <div class="hero-subtitle-devanagari">नादब्रह्म तस्मै नमः</div>
+  <div class="hero-meaning">Salutations to the Divine Sound</div>
+
+  <div class="wave-display">
+    <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+    <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+    <span class="wave-bar"></span><span class="wave-bar"></span><span class="wave-bar"></span>
+  </div>
+
+  <p class="hero-desc">
+    A digital sanctuary for students of Indian Classical Music.
+    Practice your daily riyaz with immersive tanpura, tabla accompaniment,
+    and AI-powered pitch analysis.
+  </p>
+
+  <div class="btn-row">
+    <a href="https://en.wikipedia.org/wiki/Indian_classical_music" target="_blank" class="btn-outline">Explore Classical Music</a>
+    <a href="index.html" class="btn-primary">Begin Riyaz</a>
+  </div>
+</section>
+
+<div class="section-divider">Choose Your Practice</div>
+
+<section class="mood-grid">
+  <a href="index.html" class="mood-card">
+    <span class="mood-icon">🌅</span>
+    <h3>Morning Riyaz</h3>
+    <p>Begin with clarity and swara.</p>
+  </a>
+
+  <a href="index.html" class="mood-card">
+    <span class="mood-icon">🌇</span>
+    <h3>Evening Practice</h3>
+    <p>Flow with rhythm and devotion.</p>
+  </a>
+
+  <a href="index.html" class="mood-card">
+    <span class="mood-icon">🌙</span>
+    <h3>Night Meditation</h3>
+    <p>Immerse in the depth of naad.</p>
+  </a>
+</section>
+
+<section class="feature-card">
+  <h2>Pitch Analyzer</h2>
+  <p>Let AI listen as you sing. Get instant feedback on pitch accuracy, swara detection, stability, and sustain — your personal digital guru.</p>
+  <a href="analyzer.html" class="btn-primary">🎯 Analyze My Pitch</a>
+</section>
+
+<footer>
+  <div class="footer-logo">NAADSTUDIO</div>
+  <div>
+    <div class="footer-copy">© 2026 NaadStudio</div>
+  </div>
+</footer>
+
+</body>
+</html>

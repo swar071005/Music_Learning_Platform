@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>NaadStudio – Pitch Analyzer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0b0e14;
+  --surface: #121722;
+  --surface2: #1a2130;
+
+  --gold: #c9a24a;
+  --gold-light: #f2c86b;
+  --gold-dim: rgba(201,162,74,0.12);
+
+  --accent: #ff7a18;
+
+  --text: #f5f0e6;
+  --text-muted: #a89f91;
+  --text-dim: #6f675b;
+
+  --border: rgba(201,162,74,0.2);
+  --glow: 0 0 60px rgba(201,162,74,0.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Crimson Pro', serif;
+  background: radial-gradient(circle at top, #111827, #02040a);
+  color: var(--text);
+}
+
+/* GRID BG */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201,162,74,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,162,74,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 60px;
+  background: rgba(10,14,25,0.75);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-family: 'Cinzel', serif;
+  letter-spacing: 4px;
+  color: var(--gold-light);
+}
+
+.nav-links {
+  display: flex;
+  gap: 40px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+}
+
+.nav-links a.active,
+.nav-links a:hover {
+  color: var(--gold-light);
+}
+
+/* HEADER */
+.page-header {
+  padding: 140px 40px 60px;
+  text-align: center;
+}
+
+.page-eyebrow {
+  font-family: 'Space Mono', monospace;
+  letter-spacing: 5px;
+  color: var(--gold);
+  margin-bottom: 20px;
+}
+
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(40px, 7vw, 80px);
+  letter-spacing: 6px;
+  background: linear-gradient(135deg,#f2c86b,#ff7a18,#c9a24a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.page-subtitle {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* MAIN */
+.main {
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* CARD */
+.card {
+  background: linear-gradient(145deg,#121722,#1a2130);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 20px;
+  transition: 0.3s;
+}
+
+.card:hover {
+  box-shadow: var(--glow);
+  border-color: var(--gold);
+}
+
+.card-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 10px;
+}
+
+.card h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 24px;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+  color: var(--gold-light);
+}
+
+/* UPLOAD AREA */
+.upload-area {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.3s;
+  background: rgba(201,162,74,0.05);
+}
+
+.upload-area:hover {
+  border-color: var(--gold-light);
+  background: var(--gold-dim);
+}
+
+.upload-area.drag-over {
+  border-color: var(--gold-light);
+  background: var(--gold-dim);
+}
+
+.upload-icon {
+  font-size: 48px;
+  margin-bottom: 15px;
+  display: block;
+}
+
+.upload-text {
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.upload-hint {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* FILE INPUT HIDDEN */
+#audioFileInput {
+  display: none;
+}
+
+/* BUTTONS */
+.btn-row { 
+  display: flex; 
+  gap: 15px; 
+  margin-top: 20px; 
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 2px;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.btn-start {
+  background: linear-gradient(135deg,#c9a24a,#ff7a18);
+  color: black;
+  font-weight: 600;
+}
+
+.btn-start:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 40px rgba(255,122,24,0.3);
+}
+
+.btn-start:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-stop {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--gold-light);
+}
+
+.btn-stop:hover:not(:disabled) {
+  border-color: var(--gold-light);
+  background: rgba(201,162,74,0.1);
+}
+
+.btn-stop:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* STATUS */
+.status-box {
+  background: var(--surface2);
+  border-left: 4px solid var(--gold);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  color: var(--text-muted);
+}
+
+.status-box.success {
+  border-left-color: #5ca87a;
+  color: #5ca87a;
+}
+
+.status-box.error {
+  border-left-color: #e05c5c;
+  color: #e05c5c;
+}
+
+/* AUDIO PLAYER */
+#player {
+  width: 100%;
+  margin-top: 15px;
+  border-radius: 4px;
+  max-height: 240px;
+}
+
+/* METRICS */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(150px,1fr));
+  gap: 15px;
+}
+
+.metric-box {
+  background: var(--surface2);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.metric-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 8px;
+}
+
+.metric-value {
+  color: var(--gold-light);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.metric-value.good {
+  color: #5ca87a;
+}
+
+.metric-value.poor {
+  color: #e05c5c;
+}
+
+/* SWARA */
+.swara-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.swara-chip {
+  background: var(--gold-dim);
+  padding: 8px 14px;
+  border-radius: 6px;
+  color: var(--gold-light);
+  font-size: 13px;
+  border: 1px solid rgba(201,162,74,0.3);
+}
+
+.swara-placeholder {
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* CANVAS */
+canvas {
+  width: 100%;
+  border-radius: 10px;
+  background: #02040a;
+}
+
+/* FEEDBACK */
+.feedback-box {
+  background: var(--surface2);
+  border-left: 4px solid var(--gold);
+  padding: 15px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.feedback-box.good {
+  border-left-color: #5ca87a;
+  color: #5ca87a;
+}
+
+.feedback-box.warn {
+  border-left-color: #ff7a18;
+  color: #ff7a18;
+}
+
+/* FOOTER */
+footer {
+  padding: 40px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+}
+
+.footer-logo {
+  font-family: 'Cinzel', serif;
+  color: var(--gold-light);
+  letter-spacing: 4px;
+}
+
+.footer-copy {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav {
+    padding: 15px 30px;
+  }
+
+  .page-header {
+    padding: 100px 20px 40px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .btn-row {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="home.html" class="nav-logo">NAADSTUDIO</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Riyaz</a></li>
+    <li><a href="analyzer.html" class="active">Analyzer</a></li>
+    <li><a href="home.html">Home</a></li>
+  </ul>
+</nav>
+
+<div class="page-header">
+  <div class="page-eyebrow">AI Powered</div>
+  <h1 class="page-title">PITCH ANALYZER</h1>
+  <p class="page-subtitle">Your personal digital guru — listening, always.</p>
+</div>
+
+<div class="main">
+
+  <!-- FILE UPLOAD -->
+  <div class="card">
+    <div class="card-label">Input</div>
+    <h2>Upload Audio</h2>
+
+    <div class="upload-area" id="uploadArea">
+      <span class="upload-icon">🎵</span>
+      <div class="upload-text">Click to select or drag audio file here</div>
+      <div class="upload-hint">Supports: MP3, WAV, OGG, FLAC, AAC, M4A, WEBM</div>
+    </div>
+
+    <input type="file" id="audioFileInput" accept="audio/*" />
+
+    <div id="status" class="status-box" style="display:none;"></div>
+
+    <audio id="player" controls preload="auto"></audio>
+
+    <div class="btn-row">
+      <button class="btn btn-start" id="startBtn" onclick="startAnalysis()" disabled>▶ Start Analysis</button>
+      <button class="btn btn-stop" id="pauseBtn" onclick="pauseAnalysis()" disabled>⏸ Pause</button>
+      <button class="btn btn-start" id="resumeBtn" onclick="resumeAnalysis()" disabled>⏵ Resume</button>
+      <button class="btn btn-stop" id="stopBtn" onclick="stopAnalysis()" disabled>■ Stop</button>
+    </div>
+  </div>
+
+  <!-- LIVE METRICS -->
+  <div class="card">
+    <div class="card-label">Live Data</div>
+    <h2>Metrics</h2>
+
+    <div class="metrics-grid">
+      <div class="metric-box">
+        <div class="metric-label">Frequency</div>
+        <div class="metric-value" id="freq-display">— Hz</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Stability</div>
+        <div class="metric-value" id="stability">—</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Sustain</div>
+        <div class="metric-value" id="sustain">—</div>
+      </div>
+      <div class="metric-box">
+        <div class="metric-label">Dominant Swara</div>
+        <div class="metric-value" id="dominant-swara">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE PITCH -->
+  <div class="card">
+    <div class="card-label">Detection Result</div>
+    <h2>Live Pitch</h2>
+    <div class="metric-value" id="result">Awaiting audio analysis…</div>
+  </div>
+
+  <!-- RAGA DETECTION -->
+  <div class="card">
+    <div class="card-label">Raga Recognition</div>
+    <h2>Detected Raga</h2>
+    <div class="metric-value" id="raag-name">Analyzing...</div>
+    <div style="margin-top:15px; font-size:14px; color:var(--text-muted);" id="raag-info">
+      Awaiting analysis…
+    </div>
+  </div>
+
+  <!-- SWARA FLOW -->
+  <div class="card">
+    <div class="card-label">Detection</div>
+    <h2>Swara Flow</h2>
+    <div class="swara-flow" id="swaras">
+      <span class="swara-placeholder">Awaiting analysis…</span>
+    </div>
+  </div>
+
+  <!-- GRAPH -->
+  <div class="card">
+    <div class="card-label">Visualization</div>
+    <h2>Swara Graph</h2>
+    <canvas id="graph"></canvas>
+  </div>
+
+  <!-- WAVEFORM -->
+  <div class="card">
+    <div class="card-label">Waveform</div>
+    <h2>Waveform Visualization</h2>
+    <canvas id="waveform" style="width:100%; height:160px;"></canvas>
+  </div>
+
+  <!-- FEEDBACK -->
+  <div class="card">
+    <div class="card-label">Guru Feedback</div>
+    <h2>🎯 Analysis</h2>
+    <div class="feedback-box" id="feedback">Awaiting analysis…</div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-logo">NAADSTUDIO</div>
+  <div class="footer-copy">© 2026 NaadStudio — Pitch Analysis & Raga Detection</div>
+</footer>
+
+<script>
+let audioContext, analyser, source;
+let animationId;
+let swaraTimeline = [];
+let lastSwara = null;
+let lastSwaraTime = 0;
+let freqHistory = [];
+let isAnalyzing = false;
+
+const canvas = document.getElementById("graph");
+const ctx = canvas.getContext("2d");
+const waveformCanvas = document.getElementById("waveform");
+const wfCtx = waveformCanvas.getContext("2d");
+const player = document.getElementById("player");
+const statusEl = document.getElementById("status");
+const uploadArea = document.getElementById("uploadArea");
+const fileInput = document.getElementById("audioFileInput");
+
+let graphData = [];
+let timeStep = 0;
+
+const swaraY = {
+  "Sa":0,
+  "Re♭ (Komal Re)":1,
+  "Re":2,
+  "Ga♭ (Komal Ga)":3,
+  "Ga":4,
+  "Ma":5,
+  "Ma# (Tivra Ma)":6,
+  "Pa":7,
+  "Dha♭ (Komal Dha)":8,
+  "Dha":9,
+  "Ni♭ (Komal Ni)":10,
+  "Ni":11
+};
+
+const swaraColors = {
+  "Sa":"#e8b84b",
+  "Re":"#5c8ae0",
+  "Ga":"#5ca87a",
+  "Ma":"#e05c5c",
+  "Pa":"#a87a5c",
+  "Dha":"#5ca8a8",
+  "Ni":"#a85ca8",
+  "Re♭ (Komal Re)":"#3b6bb5",
+  "Ga♭ (Komal Ga)":"#3b8f5a",
+  "Dha♭ (Komal Dha)":"#3b8f8f",
+  "Ni♭ (Komal Ni)":"#8f3b8f",
+  "Ma# (Tivra Ma)":"#ff3b3b"
+};
+
+const swaras = [
+  {name:"Sa", freq:130.81},
+  {name:"Re♭ (Komal Re)", freq:138.59},
+  {name:"Re", freq:146.83},
+  {name:"Ga♭ (Komal Ga)", freq:155.56},
+  {name:"Ga", freq:164.81},
+  {name:"Ma", freq:174.61},
+  {name:"Ma# (Tivra Ma)", freq:185.00},
+  {name:"Pa", freq:196.00},
+  {name:"Dha♭ (Komal Dha)", freq:207.65},
+  {name:"Dha", freq:220.00},
+  {name:"Ni♭ (Komal Ni)", freq:233.08},
+  {name:"Ni", freq:246.94},
+  {name:"Sa", freq:261.63},
+  {name:"Re♭ (Komal Re)", freq:277.18},
+  {name:"Re", freq:293.66},
+  {name:"Ga♭ (Komal Ga)", freq:311.13},
+  {name:"Ga", freq:329.63},
+  {name:"Ma", freq:349.23},
+  {name:"Ma# (Tivra Ma)", freq:369.99},
+  {name:"Pa", freq:392.00},
+  {name:"Dha♭ (Komal Dha)", freq:415.30},
+  {name:"Dha", freq:440.00},
+  {name:"Ni♭ (Komal Ni)", freq:466.16},
+  {name:"Ni", freq:493.88},
+  {name:"Sa", freq:523.25},
+  {name:"Re♭ (Komal Re)", freq:554.37},
+  {name:"Re", freq:587.33},
+  {name:"Ga♭ (Komal Ga)", freq:622.25},
+  {name:"Ga", freq:659.25},
+  {name:"Ma", freq:698.46},
+  {name:"Ma# (Tivra Ma)", freq:739.99},
+  {name:"Pa", freq:783.99},
+  {name:"Dha♭ (Komal Dha)", freq:830.61},
+  {name:"Dha", freq:880.00},
+  {name:"Ni♭ (Komal Ni)", freq:932.33},
+  {name:"Ni", freq:987.77}
+];
+
+const ragas = [
+  {
+    name: "Yaman",
+    swaras: ["Sa","Re","Ga","Ma# (Tivra Ma)","Pa","Dha","Ni"],
+    aaroh: "Ni Re Ga Ma# Pa Dha Ni Sa",
+    avaroh: "Sa Ni Dha Pa Ma# Ga Re Sa",
+    pakad: ["Ni","Re","Ga","Ma# (Tivra Ma)"]
+  },
+  {
+    name: "Bhoopali",
+    swaras: ["Sa","Re","Ga","Pa","Dha"],
+    aaroh: "Sa Re Ga Pa Dha Sa",
+    avaroh: "Sa Dha Pa Ga Re Sa",
+    pakad: ["Ga","Re","Sa","Dha","Sa"]
+  },
+  {
+    name: "Shivranjani",
+    swaras: ["Sa","Re","Ga♭ (Komal Ga)","Pa","Dha"],
+    aaroh: "Sa Re Ga♭ Pa Dha Sa",
+    avaroh: "Sa Dha Pa Ga♭ Re Sa",
+    pakad: ["Dha","Pa","Ga♭ (Komal Ga)","Re"]
+  }
+];
+
+// UPLOAD AREA HANDLERS
+uploadArea.addEventListener('click', () => fileInput.click());
+
+uploadArea.addEventListener('dragover', (e) => {
+  e.preventDefault();
+  uploadArea.classList.add('drag-over');
+});
+
+uploadArea.addEventListener('dragleave', () => {
+  uploadArea.classList.remove('drag-over');
+});
+
+uploadArea.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadArea.classList.remove('drag-over');
+  const files = e.dataTransfer.files;
+  if (files.length > 0) {
+    handleAudioFile(files[0]);
+  }
+});
+
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files.length > 0) {
+    handleAudioFile(e.target.files[0]);
+  }
+});
+
+function showStatus(message, type = 'info') {
+  statusEl.textContent = message;
+  statusEl.className = 'status-box ' + type;
+  statusEl.style.display = 'block';
+}
+
+function handleAudioFile(file) {
+  console.log('📁 File selected:', file.name, 'Type:', file.type);
+
+  // Check if it's an audio file
+  if (!file.type.startsWith('audio/')) {
+    showStatus('❌ Please select an audio file', 'error');
+    return;
+  }
+
+  try {
+    const url = URL.createObjectURL(file);
+    player.src = url;
+    player.load();
+
+    player.oncanplay = () => {
+      showStatus(`✅ Loaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`, 'success');
+      document.getElementById('startBtn').disabled = false;
+    };
+
+    player.onerror = () => {
+      showStatus(`❌ Browser cannot play this format: ${file.type}`, 'error');
+      document.getElementById('startBtn').disabled = true;
+    };
+
+  } catch (error) {
+    showStatus('❌ Error: ' + error.message, 'error');
+    console.error('Error:', error);
+  }
+}
+
+async function startAnalysis() {
+  if (!player.src) {
+    showStatus('❌ Please select and load an audio file first', 'error');
+    return;
+  }
+
+  try {
+    // Initialize audio context
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    await audioContext.resume();
+    
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 2048;
+    
+    source = audioContext.createMediaElementSource(player);
+    source.connect(analyser);
+    analyser.connect(audioContext.destination);
+
+    // Reset data
+    swaraTimeline = [];
+    freqHistory = [];
+    graphData = [];
+    timeStep = 0;
+    isAnalyzing = true;
+
+    // Update UI
+    document.getElementById('startBtn').disabled = true;
+    document.getElementById('pauseBtn').disabled = false;
+    document.getElementById('stopBtn').disabled = false;
+
+    player.play().catch(err => {
+      showStatus('❌ Playback error: ' + err.message, 'error');
+    });
+
+    analyze();
+
+  } catch (error) {
+    showStatus('❌ Analysis error: ' + error.message, 'error');
+    console.error('AudioContext error:', error);
+  }
+}
+
+// let audioContext;
+// let analyser;
+// let source;
+
+// async function startAnalysis(){
+//   const player = document.getElementById("player");
+
+//   if(!player.src){
+//     alert("Please select and load a song first.");
+//     return;
+//   }
+
+//   player.loop = true;
+//   player.currentTime = 0;
+
+//   try {
+//     await player.play();
+//   } catch(playError) {
+//     console.error('Playback failed:', playError);
+//     alert('Playback failed. Make sure the song file is supported and try again.');
+//     return;
+//   }
+
+//   try {
+//     // ✅ CREATE ONLY ONCE
+//     if(!audioContext){
+//       audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+//       analyser = audioContext.createAnalyser();
+//       analyser.fftSize = 2048;
+
+//       source = audioContext.createMediaElementSource(player);
+
+//       source.connect(analyser);
+//       analyser.connect(audioContext.destination);
+//     }
+
+//     // ✅ resume if needed
+//     if(audioContext.state === "suspended"){
+//       await audioContext.resume();
+//     }
+
+//   } catch(audioError) {
+//     console.error('AudioContext setup failed:', audioError);
+//     alert('Audio analysis could not start: ' + audioError.message);
+//     return;
+//   }
+
+//   // reset data
+//   swaraTimeline = [];
+//   freqHistory = [];
+//   graphData = [];
+//   timeStep = 0;
+
+//   analyze();
+// }
+
+function pauseAnalysis() {
+  player.pause();
+  cancelAnimationFrame(animationId);
+  document.getElementById('pauseBtn').disabled = true;
+  document.getElementById('resumeBtn').disabled = false;
+}
+
+function resumeAnalysis() {
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+  player.play();
+  analyze();
+  document.getElementById('pauseBtn').disabled = false;
+  document.getElementById('resumeBtn').disabled = true;
+}
+
+function analyze() {
+  if (!isAnalyzing) return;
+
+  const buffer = new Float32Array(analyser.fftSize);
+  analyser.getFloatTimeDomainData(buffer);
+
+  drawWaveform(buffer);
+  const pitchFreq = autoCorrelate(buffer, audioContext.sampleRate);
+  const swara = pitchFreq > 0 ? getSwaraFromScale(pitchFreq) : null;
+
+  if (pitchFreq === -1 || pitchFreq < 80 || pitchFreq > 800) {
+    animationId = requestAnimationFrame(analyze);
+    return;
+  }
+
+  const freq = pitchFreq;
+  freqHistory.push(freq);
+  if (freqHistory.length > 60) freqHistory.shift();
+
+  document.getElementById("freq-display").textContent = freq.toFixed(1) + " Hz";
+
+  if (swara) {
+    document.getElementById("result").textContent = swara + " (" + freq.toFixed(1) + " Hz)";
+  } else {
+    document.getElementById("result").textContent = freq.toFixed(1) + " Hz";
+  }
+
+  const now = Date.now();
+  const shouldAddSwara = swara && (swara !== lastSwara || now - lastSwaraTime > 250);
+
+  if (shouldAddSwara) {
+    swaraTimeline.push(swara);
+    lastSwara = swara;
+    lastSwaraTime = now;
+    if (swaraTimeline.length > 40) swaraTimeline.shift();
+  }
+
+  const container = document.getElementById("swaras");
+  if (swaraTimeline.length > 0) {
+    container.innerHTML = swaraTimeline.map(s =>
+      `<span class="swara-chip" style="border-color:${swaraColors[s]}40; background:${swaraColors[s]}20; color:${swaraColors[s]}">${s}</span>`
+    ).join('');
+  }
+
+  if (swara) {
+    graphData.push({ x: timeStep++, y: swaraY[swara] || 0, s: swara });
+    if (graphData.length > 80) graphData.shift();
+    drawGraph();
+  }
+
+  const variance = getVariance(freqHistory);
+  const stability = variance < 50 ? "Good" : variance < 150 ? "Average" : "Poor";
+  const sustain = freqHistory.length > 30 ? "Good" : "Weak";
+  const dom = getDominant(swaraTimeline);
+
+  const detectedRaga = detectRaga(swaraTimeline);
+  if (detectedRaga) {
+    document.getElementById("raag-name").textContent = detectedRaga.name;
+    document.getElementById("raag-info").innerHTML = `
+      <b>Aaroh:</b> ${detectedRaga.aaroh} <br>
+      <b>Avaroh:</b> ${detectedRaga.avaroh} <br>
+      <b>Pakad:</b> ${detectedRaga.pakad.join(' - ')}
+    `;
+  }
+
+  const stabEl = document.getElementById("stability");
+  stabEl.textContent = stability;
+  stabEl.className = "metric-value " + (stability === "Good" ? "good" : stability === "Average" ? "" : "poor");
+
+  const susEl = document.getElementById("sustain");
+  susEl.textContent = sustain;
+  susEl.className = "metric-value " + (sustain === "Good" ? "good" : "poor");
+
+  if (dom) document.getElementById("dominant-swara").textContent = dom;
+
+  let fb = [];
+  if (stability === "Poor") fb.push("🎯 Maintain a steady voice — your pitch is wavering.");
+  if (stability === "Average") fb.push("📈 Good effort. Try to hold each swara more steadily.");
+  if (sustain === "Weak") fb.push("⏱️ Hold notes longer for deeper practice.");
+  if (swaraTimeline.length < 3) fb.push("🎵 Try exploring more swaras in your range.");
+  if (fb.length === 0) fb.push("⭐ Excellent! Your pitch is stable and sustained. Keep flowing.");
+
+  const fbEl = document.getElementById("feedback");
+  fbEl.innerHTML = fb.join(" ");
+  fbEl.className = "feedback-box " + (fb[0].startsWith("⭐") ? "good" : "warn");
+
+  animationId = requestAnimationFrame(analyze);
+}
+
+function autoCorrelate(buf, sampleRate) {
+  let SIZE = buf.length;
+  let rms = 0;
+
+  for (let i = 0; i < SIZE; i++) {
+    let val = buf[i];
+    rms += val * val;
+  }
+  rms = Math.sqrt(rms / SIZE);
+  if (rms < 0.01) return -1;
+
+  let r1 = 0, r2 = SIZE - 1, thres = 0.2;
+  for (let i = 0; i < SIZE / 2; i++) {
+    if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+  }
+  for (let i = 1; i < SIZE / 2; i++) {
+    if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
+  }
+
+  buf = buf.slice(r1, r2);
+  SIZE = buf.length;
+
+  let c = new Array(SIZE).fill(0);
+  for (let i = 0; i < SIZE; i++) {
+    for (let j = 0; j < SIZE - i; j++) {
+      c[i] += buf[j] * buf[j + i];
+    }
+  }
+
+  let d = 0;
+  while (c[d] > c[d + 1]) d++;
+
+  let maxval = -1, maxpos = -1;
+  for (let i = d; i < SIZE; i++) {
+    if (c[i] > maxval) {
+      maxval = c[i];
+      maxpos = i;
+    }
+  }
+
+  if (maxpos <= 0) return -1;
+  return sampleRate / maxpos;
+}
+
+function getSwaraFromScale(freq) {
+  if (freq <= 0) return null;
+
+  let closest = null;
+  let minDiff = Infinity;
+
+  swaras.forEach(s => {
+    let diff = Math.abs(freq - s.freq);
+    if (diff < minDiff) {
+      minDiff = diff;
+      closest = s;
+    }
+  });
+
+  if (!closest || minDiff / closest.freq > 0.08) return null;
+  return closest.name;
+}
+
+function getVariance(arr) {
+  if (arr.length === 0) return 0;
+  const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+  return arr.reduce((a, b) => a + (b - avg) ** 2, 0) / arr.length;
+}
+
+function getDominant(arr) {
+  if (!arr.length) return null;
+  const c = {};
+  arr.forEach(s => c[s] = (c[s] || 0) + 1);
+  return Object.entries(c).sort((a, b) => b[1] - a[1])[0][0];
+}
+
+function detectRaga(swaraSeq) {
+  if (swaraSeq.length < 5) return null;
+
+  let bestMatch = null;
+  let maxScore = 0;
+
+  ragas.forEach(r => {
+    let score = 0;
+    swaraSeq.forEach(s => {
+      if (r.swaras.includes(s)) score++;
+    });
+
+    if (score > maxScore) {
+      maxScore = score;
+      bestMatch = r;
+    }
+  });
+
+  return bestMatch;
+}
+
+function drawWaveform(data) {
+  const W = waveformCanvas.offsetWidth;
+  const H = 150;
+  waveformCanvas.width = W;
+  waveformCanvas.height = H;
+
+  wfCtx.clearRect(0, 0, W, H);
+
+  // Background
+  wfCtx.fillStyle = "#0b0e14";
+  wfCtx.fillRect(0, 0, W, H);
+
+  // Center line
+  wfCtx.strokeStyle = "rgba(201,162,74,0.2)";
+  wfCtx.lineWidth = 1;
+  wfCtx.beginPath();
+  wfCtx.moveTo(0, H / 2);
+  wfCtx.lineTo(W, H / 2);
+  wfCtx.stroke();
+
+  // Waveform
+  wfCtx.strokeStyle = "#e8b84b";
+  wfCtx.lineWidth = 2;
+  wfCtx.beginPath();
+
+  const samplesPerPixel = Math.max(1, Math.floor(data.length / W));
+  const centerY = H / 2;
+
+  for (let x = 0; x < W; x++) {
+    const startIdx = x * samplesPerPixel;
+    const endIdx = Math.min(startIdx + samplesPerPixel, data.length);
+
+    let sum = 0;
+    for (let i = startIdx; i < endIdx; i++) {
+      sum += data[i];
+    }
+    const avgSample = sum / (endIdx - startIdx);
+    const y = centerY + (avgSample * centerY * 0.8);
+
+    if (x === 0) {
+      wfCtx.moveTo(x, y);
+    } else {
+      wfCtx.lineTo(x, y);
+    }
+  }
+
+  wfCtx.stroke();
+}
+
+function drawGraph() {
+  const W = canvas.offsetWidth;
+  const H = 200;
+  canvas.width = W;
+  canvas.height = H;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Background
+  ctx.fillStyle = "#141720";
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid
+  const labels = ["Sa", "Re", "Ga", "Ma", "Pa", "Dha", "Ni"];
+  const stepY = (H - 40) / 6;
+
+  for (let i = 0; i < 7; i++) {
+    const y = H - 20 - i * stepY;
+    ctx.strokeStyle = "rgba(201,146,42,0.08)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(36, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
+
+    ctx.fillStyle = swaraColors[labels[i]] || "#7a6e5f";
+    ctx.font = "10px 'Space Mono', monospace";
+    ctx.fillText(labels[i], 4, y + 4);
+  }
+
+  if (graphData.length < 2) return;
+
+  const xStep = (W - 40) / Math.max(graphData.length, 1);
+
+  ctx.beginPath();
+  ctx.lineWidth = 2;
+
+  graphData.forEach((p, i) => {
+    const x = 40 + i * xStep;
+    const y = H - 20 - p.y * stepY;
+
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  const grad = ctx.createLinearGradient(40, 0, W, 0);
+  grad.addColorStop(0, "rgba(201,146,42,0.3)");
+  grad.addColorStop(1, "#e8b84b");
+  ctx.strokeStyle = grad;
+  ctx.stroke();
+
+  // Dots
+  graphData.forEach((p, i) => {
+    const x = 40 + i * xStep;
+    const y = H - 20 - p.y * stepY;
+    ctx.beginPath();
+    ctx.arc(x, y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = swaraColors[p.s] || "#e8b84b";
+    ctx.fill();
+  });
+}
+
+function stopAnalysis() {
+  cancelAnimationFrame(animationId);
+  isAnalyzing = false;
+  player.pause();
+  player.currentTime = 0;
+  
+  if (source) {
+    try {
+      source.disconnect();
+    } catch (e) {}
+  }
+
+  swaraTimeline = [];
+  lastSwara = null;
+  freqHistory = [];
+
+  document.getElementById("freq-display").textContent = "— Hz";
+  document.getElementById("result").textContent = "Awaiting audio analysis…";
+  document.getElementById("stability").textContent = "—";
+  document.getElementById("sustain").textContent = "—";
+  document.getElementById("dominant-swara").textContent = "—";
+  document.getElementById("swaras").innerHTML = '<span class="swara-placeholder">Awaiting analysis…</span>';
+  document.getElementById("feedback").textContent = "Awaiting analysis…";
+  document.getElementById("raag-name").textContent = "Analyzing...";
+  document.getElementById("raag-info").textContent = "Awaiting analysis…";
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  wfCtx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('pauseBtn').disabled = true;
+  document.getElementById('resumeBtn').disabled = true;
+  document.getElementById('stopBtn').disabled = true;
+
+  showStatus('✅ Analysis stopped', 'success');
+}
+</script>
+
+</body>
+</html>

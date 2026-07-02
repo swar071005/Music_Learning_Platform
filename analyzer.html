@@ -396,6 +396,18 @@ footer {
     width: 100%;
   }
 }
+
+
+//Mobile //
+  @media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .song-list {
+    width: 100%;
+  }
+}
 </style>
 </head>
 <body>
@@ -1146,6 +1158,10 @@ function stopAnalysis() {
 
   showStatus('✅ Analysis stopped', 'success');
 }
+
+document.addEventListener("click", () => {
+  audio.play();
+});
 </script>
 
 </body>

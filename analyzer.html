@@ -623,6 +623,104 @@ const swaras = [
   {name:"Ni", freq:987.77}
 ];
 
+// const ragas = [
+//   {
+//     name: "Yaman",
+//     swaras: ["Sa","Re","Ga","Ma# (Tivra Ma)","Pa","Dha","Ni"],
+//     aaroh: "Ni Re Ga Ma# Pa Dha Ni Sa",
+//     avaroh: "Sa Ni Dha Pa Ma# Ga Re Sa",
+//     pakad: ["Ni","Re","Ga","Ma# (Tivra Ma)"]
+//   },
+//   {
+//     name: "Bhoopali",
+//     swaras: ["Sa","Re","Ga","Pa","Dha"],
+//     aaroh: "Sa Re Ga Pa Dha Sa",
+//     avaroh: "Sa Dha Pa Ga Re Sa",
+//     pakad: ["Ga","Re","Sa","Dha","Sa"]
+//   },
+//   {
+//     name: "Shivranjani",
+//     swaras: ["Sa","Re","Ga♭ (Komal Ga)","Pa","Dha"],
+//     aaroh: "Sa Re Ga♭ Pa Dha Sa",
+//     avaroh: "Sa Dha Pa Ga♭ Re Sa",
+//     pakad: ["Dha","Pa","Ga♭ (Komal Ga)","Re"]
+//   }
+//     {
+//     name: "Ahir Bhairav",
+//     swaras: [
+//       "Sa",
+//       "Re♭ (Komal Re)",
+//       "Ga",
+//       "Ma",
+//       "Pa",
+//       "Dha",
+//       "Ni♭ (Komal Ni)"
+//     ],
+//     aaroh: "Sa Re♭ Ga Ma Pa Dha Ni♭ Sa",
+//     avaroh: "Sa Ni♭ Dha Pa Ma Ga Re♭ Sa",
+//     pakad: ["Ni♭","Sa","Re♭","Ga","Ma","Ga","Re♭","Sa"]
+//   },
+//     {
+//     name: "Todi",
+//     swaras: [
+//       "Sa",
+//       "Re♭ (Komal Re)",
+//       "Ga♭ (Komal Ga)",
+//       "Ma# (Tivra Ma)",
+//       "Pa",
+//       "Dha♭ (Komal Dha)",
+//       "Ni"
+//     ],
+//     aaroh: "Sa Re♭ Ga♭ Ma# Pa Dha♭ Ni Sa",
+//     avaroh: "Sa Ni Dha♭ Pa Ma# Ga♭ Re♭ Sa",
+//     pakad: ["Ga♭","Re♭","Ga♭","Ma#","Dha♭","Ni","Dha♭","Pa"]
+//   },
+      
+//   {
+//     name: "Vrindavani Sarang",
+//     swaras: [
+//       "Sa",
+//       "Re",
+//       "Ma",
+//       "Pa",
+//       "Ni♭ (Komal Ni)",
+//       "Ni"
+//     ],
+//     aaroh: "Sa Re Ma Pa Ni Sa",
+//     avaroh: "Sa Ni Pa Ma Re Sa",
+//     pakad: ["Re","Ma","Pa","Ni","Pa","Ma","Re"]
+//   },
+//       {
+//     name: "Darbari Kanada",
+//     swaras: [
+//       "Sa",
+//       "Re",
+//       "Ga♭ (Komal Ga)",
+//       "Ma",
+//       "Pa",
+//       "Dha♭ (Komal Dha)",
+//       "Ni"
+//     ],
+//     aaroh: "Sa Re Ga♭ Ma Pa Dha♭ Ni Sa",
+//     avaroh: "Sa Ni Dha♭ Pa Ma Ga♭ Re Sa",
+//     pakad: ["Ga♭","Ma","Pa","Dha♭","Ni","Sa"]
+//   },
+//         {
+//     name: "Bageshree",
+//     swaras: [
+//       "Sa",
+//       "Re",
+//       "Ga♭ (Komal Ga)",
+//       "Ma",
+//       "Pa",
+//       "Dha",
+//       "Ni♭ (Komal Ni)"
+//     ],
+//     aaroh: "Sa Ga♭ Ma Dha Ni♭ Sa",
+//     avaroh: "Sa Ni♭ Dha Ma Pa Ga♭ Re Sa",
+//     pakad: ["Dha","Ni♭","Sa","Ga♭","Ma","Dha","Ma","Ga♭"]
+//   },
+// ];
 const ragas = [
   {
     name: "Yaman",
@@ -631,6 +729,7 @@ const ragas = [
     avaroh: "Sa Ni Dha Pa Ma# Ga Re Sa",
     pakad: ["Ni","Re","Ga","Ma# (Tivra Ma)"]
   },
+
   {
     name: "Bhoopali",
     swaras: ["Sa","Re","Ga","Pa","Dha"],
@@ -638,14 +737,16 @@ const ragas = [
     avaroh: "Sa Dha Pa Ga Re Sa",
     pakad: ["Ga","Re","Sa","Dha","Sa"]
   },
+
   {
     name: "Shivranjani",
     swaras: ["Sa","Re","Ga♭ (Komal Ga)","Pa","Dha"],
     aaroh: "Sa Re Ga♭ Pa Dha Sa",
     avaroh: "Sa Dha Pa Ga♭ Re Sa",
     pakad: ["Dha","Pa","Ga♭ (Komal Ga)","Re"]
-  }
-    {
+  },
+
+  {
     name: "Ahir Bhairav",
     swaras: [
       "Sa",
@@ -658,9 +759,19 @@ const ragas = [
     ],
     aaroh: "Sa Re♭ Ga Ma Pa Dha Ni♭ Sa",
     avaroh: "Sa Ni♭ Dha Pa Ma Ga Re♭ Sa",
-    pakad: ["Ni♭","Sa","Re♭","Ga","Ma","Ga","Re♭","Sa"]
+    pakad: [
+      "Ni♭ (Komal Ni)",
+      "Sa",
+      "Re♭ (Komal Re)",
+      "Ga",
+      "Ma",
+      "Ga",
+      "Re♭ (Komal Re)",
+      "Sa"
+    ]
   },
-    {
+
+  {
     name: "Todi",
     swaras: [
       "Sa",
@@ -673,9 +784,18 @@ const ragas = [
     ],
     aaroh: "Sa Re♭ Ga♭ Ma# Pa Dha♭ Ni Sa",
     avaroh: "Sa Ni Dha♭ Pa Ma# Ga♭ Re♭ Sa",
-    pakad: ["Ga♭","Re♭","Ga♭","Ma#","Dha♭","Ni","Dha♭","Pa"]
+    pakad: [
+      "Ga♭ (Komal Ga)",
+      "Re♭ (Komal Re)",
+      "Ga♭ (Komal Ga)",
+      "Ma# (Tivra Ma)",
+      "Dha♭ (Komal Dha)",
+      "Ni",
+      "Dha♭ (Komal Dha)",
+      "Pa"
+    ]
   },
-      
+
   {
     name: "Vrindavani Sarang",
     swaras: [
@@ -683,14 +803,22 @@ const ragas = [
       "Re",
       "Ma",
       "Pa",
-      "Ni♭ (Komal Ni)",
       "Ni"
     ],
     aaroh: "Sa Re Ma Pa Ni Sa",
     avaroh: "Sa Ni Pa Ma Re Sa",
-    pakad: ["Re","Ma","Pa","Ni","Pa","Ma","Re"]
+    pakad: [
+      "Re",
+      "Ma",
+      "Pa",
+      "Ni",
+      "Pa",
+      "Ma",
+      "Re"
+    ]
   },
-      {
+
+  {
     name: "Darbari Kanada",
     swaras: [
       "Sa",
@@ -703,9 +831,17 @@ const ragas = [
     ],
     aaroh: "Sa Re Ga♭ Ma Pa Dha♭ Ni Sa",
     avaroh: "Sa Ni Dha♭ Pa Ma Ga♭ Re Sa",
-    pakad: ["Ga♭","Ma","Pa","Dha♭","Ni","Sa"]
+    pakad: [
+      "Ga♭ (Komal Ga)",
+      "Ma",
+      "Pa",
+      "Dha♭ (Komal Dha)",
+      "Ni",
+      "Sa"
+    ]
   },
-        {
+
+  {
     name: "Bageshree",
     swaras: [
       "Sa",
@@ -718,10 +854,19 @@ const ragas = [
     ],
     aaroh: "Sa Ga♭ Ma Dha Ni♭ Sa",
     avaroh: "Sa Ni♭ Dha Ma Pa Ga♭ Re Sa",
-    pakad: ["Dha","Ni♭","Sa","Ga♭","Ma","Dha","Ma","Ga♭"]
-  },
+    pakad: [
+      "Dha",
+      "Ni♭ (Komal Ni)",
+      "Sa",
+      "Ga♭ (Komal Ga)",
+      "Ma",
+      "Dha",
+      "Ma",
+      "Ga♭ (Komal Ga)"
+    ]
+  }
 ];
-
+  
 // UPLOAD AREA HANDLERS
 uploadArea.addEventListener('click', () => fileInput.click());
 

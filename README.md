@@ -44,7 +44,6 @@ A web-based interactive platform designed to help users learn and explore music 
 
 2. Navigate to the project folder:cd music-learning-platform
 
-3. 
 3. Open `index.html` in your browser
 
 ---

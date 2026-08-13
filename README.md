@@ -16,7 +16,7 @@ A web-based interactive platform designed to help users learn and explore music 
 
 ## 🚀 Live Demo
 
-👉 https://your-username.github.io/music-learning-platform  
+👉https://github.com/swar071005/Music_Learning_Platform.git 
 
 ---
 

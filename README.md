@@ -40,7 +40,7 @@ A web-based interactive platform designed to help users learn and explore music 
 
 ## ⚙️ Setup & Installation
 
-1. Clone the repository:git clone https://github.com/your-username/music-learning-platform.git
+1. Clone the repository:git clone https://github.com/swar071005/Music_Learning_Platform.git 
 
 2. Navigate to the project folder:cd music-learning-platform
 

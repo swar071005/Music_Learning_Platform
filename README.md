@@ -22,8 +22,8 @@ A web-based interactive platform designed to help users learn and explore music 
 
 ## 🛠️ Technologies Used
 
-- HTML5  
-- CSS3  
+- HTML 
+- CSS3
 - JavaScript  
 
 ---
@@ -35,8 +35,7 @@ A web-based interactive platform designed to help users learn and explore music 
 | `home.html`          | Home / dashboard page          |
 | `analyzer.html`      | Music analyzer interface       |
 | `script.js`          | JavaScript logic               |
-| `sounds/`            | Folder containing audio files  |
-| `sounds/tanpura/`    | Tanpura sound files            |
+
 
 ## ⚙️ Setup & Installation
 
@@ -63,7 +62,6 @@ This project is hosted using GitHub Pages:
 
 ## ⚠️ Important Notes
 
-- This project is **frontend-only**  
 - Backend files (Python/Flask) are not included in deployment  
 - Ensure `index.html` is in the root directory  
 
@@ -71,7 +69,6 @@ This project is hosted using GitHub Pages:
 
 ## 📈 Future Improvements
 
-- 🎤 Real-time pitch detection  
 - 🤖 AI-based raga recognition  
 - 📱 Mobile responsiveness enhancements  
 - ☁️ Backend integration for advanced analysis  

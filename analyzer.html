@@ -1869,27 +1869,46 @@ async function startAnalysis() {
 
     try {
 
-        if (!audioContext) {
+        // if (!audioContext) {
 
-            audioContext =
-                new (window.AudioContext ||
-                     window.webkitAudioContext)();
+        //     audioContext =
+        //         new (window.AudioContext ||
+        //              window.webkitAudioContext)();
 
-            analyser =
-                audioContext.createAnalyser();
+        //     analyser =
+        //         audioContext.createAnalyser();
 
+        //     analyser.fftSize = 2048;
+
+        //     analyser.smoothingTimeConstant = 0.15;
+
+        //     source =
+        //         audioContext.createMediaElementSource(player);
+
+        //     source.connect(analyser);
+
+        //     analyser.connect(audioContext.destination);
+        // }
+if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioContext.createAnalyser();
             analyser.fftSize = 2048;
-
             analyser.smoothingTimeConstant = 0.15;
+            
+            // NEW: Add a low-pass filter to block high-frequency instrument noise
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 900; // Focuses on the core human vocal range
 
-            source =
-                audioContext.createMediaElementSource(player);
-
-            source.connect(analyser);
-
-            analyser.connect(audioContext.destination);
+            source = audioContext.createMediaElementSource(player);
+            
+            // Route audio to the filter, then to the analyser (for math)
+            source.connect(filter);
+            filter.connect(analyser);
+            
+            // Route the original, un-filtered audio to the speakers (for your ears)
+            source.connect(audioContext.destination);
         }
-
         await audioContext.resume();
 
         swaraTimeline = [];

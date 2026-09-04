@@ -1350,356 +1350,356 @@ const statusEl = document.getElementById("status");
 const uploadArea = document.getElementById("uploadArea");
 const fileInput = document.getElementById("audioFileInput");
 
-/* ============================================================
-   MUSICAL CONSTANTS
-   ============================================================ */
+// /* ============================================================
+//    MUSICAL CONSTANTS
+//    ============================================================ */
 
-/*
-   We DO NOT assume that Sa is C.
+// /*
+//    We DO NOT assume that Sa is C.
 
-   Sa will be estimated from the uploaded recording.
-*/
+//    Sa will be estimated from the uploaded recording.
+// */
 
-const SWARA_NAMES = [
-    "Sa",
-    "Re♭ (Komal Re)",
-    "Re",
-    "Ga♭ (Komal Ga)",
-    "Ga",
-    "Ma",
-    "Ma# (Tivra Ma)",
-    "Pa",
-    "Dha♭ (Komal Dha)",
-    "Dha",
-    "Ni♭ (Komal Ni)",
-    "Ni"
-];
+// const SWARA_NAMES = [
+//     "Sa",
+//     "Re♭ (Komal Re)",
+//     "Re",
+//     "Ga♭ (Komal Ga)",
+//     "Ga",
+//     "Ma",
+//     "Ma# (Tivra Ma)",
+//     "Pa",
+//     "Dha♭ (Komal Dha)",
+//     "Dha",
+//     "Ni♭ (Komal Ni)",
+//     "Ni"
+// ];
 
-/*
-   Equal-tempered semitone positions relative to Sa.
+// /*
+//    Equal-tempered semitone positions relative to Sa.
 
-   0  = Sa
-   1  = Komal Re
-   2  = Re
-   3  = Komal Ga
-   4  = Ga
-   5  = Ma
-   6  = Tivra Ma
-   7  = Pa
-   8  = Komal Dha
-   9  = Dha
-   10 = Komal Ni
-   11 = Ni
-*/
+//    0  = Sa
+//    1  = Komal Re
+//    2  = Re
+//    3  = Komal Ga
+//    4  = Ga
+//    5  = Ma
+//    6  = Tivra Ma
+//    7  = Pa
+//    8  = Komal Dha
+//    9  = Dha
+//    10 = Komal Ni
+//    11 = Ni
+// */
 
-const SWARA_SEMITONES = {
-    "Sa": 0,
-    "Re♭ (Komal Re)": 1,
-    "Re": 2,
-    "Ga♭ (Komal Ga)": 3,
-    "Ga": 4,
-    "Ma": 5,
-    "Ma# (Tivra Ma)": 6,
-    "Pa": 7,
-    "Dha♭ (Komal Dha)": 8,
-    "Dha": 9,
-    "Ni♭ (Komal Ni)": 10,
-    "Ni": 11
-};
+// const SWARA_SEMITONES = {
+//     "Sa": 0,
+//     "Re♭ (Komal Re)": 1,
+//     "Re": 2,
+//     "Ga♭ (Komal Ga)": 3,
+//     "Ga": 4,
+//     "Ma": 5,
+//     "Ma# (Tivra Ma)": 6,
+//     "Pa": 7,
+//     "Dha♭ (Komal Dha)": 8,
+//     "Dha": 9,
+//     "Ni♭ (Komal Ni)": 10,
+//     "Ni": 11
+// };
 
-const swaraY = {
-    "Sa": 0,
-    "Re♭ (Komal Re)": 1,
-    "Re": 2,
-    "Ga♭ (Komal Ga)": 3,
-    "Ga": 4,
-    "Ma": 5,
-    "Ma# (Tivra Ma)": 6,
-    "Pa": 7,
-    "Dha♭ (Komal Dha)": 8,
-    "Dha": 9,
-    "Ni♭ (Komal Ni)": 10,
-    "Ni": 11
-};
+// const swaraY = {
+//     "Sa": 0,
+//     "Re♭ (Komal Re)": 1,
+//     "Re": 2,
+//     "Ga♭ (Komal Ga)": 3,
+//     "Ga": 4,
+//     "Ma": 5,
+//     "Ma# (Tivra Ma)": 6,
+//     "Pa": 7,
+//     "Dha♭ (Komal Dha)": 8,
+//     "Dha": 9,
+//     "Ni♭ (Komal Ni)": 10,
+//     "Ni": 11
+// };
 
-const swaraColors = {
-    "Sa": "#e8b84b",
-    "Re": "#5c8ae0",
-    "Ga": "#5ca87a",
-    "Ma": "#e05c5c",
-    "Pa": "#a87a5c",
-    "Dha": "#5ca8a8",
-    "Ni": "#a85ca8",
-    "Re♭ (Komal Re)": "#3b6bb5",
-    "Ga♭ (Komal Ga)": "#3b8f5a",
-    "Dha♭ (Komal Dha)": "#3b8f8f",
-    "Ni♭ (Komal Ni)": "#8f3b8f",
-    "Ma# (Tivra Ma)": "#ff3b3b"
-};
+// const swaraColors = {
+//     "Sa": "#e8b84b",
+//     "Re": "#5c8ae0",
+//     "Ga": "#5ca87a",
+//     "Ma": "#e05c5c",
+//     "Pa": "#a87a5c",
+//     "Dha": "#5ca8a8",
+//     "Ni": "#a85ca8",
+//     "Re♭ (Komal Re)": "#3b6bb5",
+//     "Ga♭ (Komal Ga)": "#3b8f5a",
+//     "Dha♭ (Komal Dha)": "#3b8f8f",
+//     "Ni♭ (Komal Ni)": "#8f3b8f",
+//     "Ma# (Tivra Ma)": "#ff3b3b"
+// };
 
-/* ============================================================
-   RAGA DATABASE
-   ============================================================ */
+// /* ============================================================
+//    RAGA DATABASE
+//    ============================================================ */
 
-const ragas = [
+// const ragas = [
 
-    {
-        name: "Yaman",
+//     {
+//         name: "Yaman",
 
-        swaras: [
-            "Sa",
-            "Re",
-            "Ga",
-            "Ma# (Tivra Ma)",
-            "Pa",
-            "Dha",
-            "Ni"
-        ],
+//         swaras: [
+//             "Sa",
+//             "Re",
+//             "Ga",
+//             "Ma# (Tivra Ma)",
+//             "Pa",
+//             "Dha",
+//             "Ni"
+//         ],
 
-        aaroh: [
-            "Sa",
-            "Re",
-            "Ga",
-            "Ma# (Tivra Ma)",
-            "Pa",
-            "Dha",
-            "Ni",
-            "Sa"
-        ],
+//         aaroh: [
+//             "Sa",
+//             "Re",
+//             "Ga",
+//             "Ma# (Tivra Ma)",
+//             "Pa",
+//             "Dha",
+//             "Ni",
+//             "Sa"
+//         ],
 
-        avaroh: [
-            "Sa",
-            "Ni",
-            "Dha",
-            "Pa",
-            "Ma# (Tivra Ma)",
-            "Ga",
-            "Re",
-            "Sa"
-        ],
+//         avaroh: [
+//             "Sa",
+//             "Ni",
+//             "Dha",
+//             "Pa",
+//             "Ma# (Tivra Ma)",
+//             "Ga",
+//             "Re",
+//             "Sa"
+//         ],
 
-        pakad: [
-            ["Ni", "Re", "Ga", "Ma# (Tivra Ma)"],
-            ["Ga", "Ma# (Tivra Ma)", "Pa"],
-            ["Dha", "Ni", "Re", "Ga"]
-        ],
+//         pakad: [
+//             ["Ni", "Re", "Ga", "Ma# (Tivra Ma)"],
+//             ["Ga", "Ma# (Tivra Ma)", "Pa"],
+//             ["Dha", "Ni", "Re", "Ga"]
+//         ],
 
-        forbidden: [
-            "Ma"
-        ],
+//         forbidden: [
+//             "Ma"
+//         ],
 
-        vadi: "Ga",
-        samvadi: "Ni"
-    },
+//         vadi: "Ga",
+//         samvadi: "Ni"
+//     },
 
-    {
-        name: "Bhoopali",
+//     {
+//         name: "Bhoopali",
 
-        swaras: [
-            "Sa",
-            "Re",
-            "Ga",
-            "Pa",
-            "Dha"
-        ],
+//         swaras: [
+//             "Sa",
+//             "Re",
+//             "Ga",
+//             "Pa",
+//             "Dha"
+//         ],
 
-        aaroh: [
-            "Sa",
-            "Re",
-            "Ga",
-            "Pa",
-            "Dha",
-            "Sa"
-        ],
+//         aaroh: [
+//             "Sa",
+//             "Re",
+//             "Ga",
+//             "Pa",
+//             "Dha",
+//             "Sa"
+//         ],
 
-        avaroh: [
-            "Sa",
-            "Dha",
-            "Pa",
-            "Ga",
-            "Re",
-            "Sa"
-        ],
+//         avaroh: [
+//             "Sa",
+//             "Dha",
+//             "Pa",
+//             "Ga",
+//             "Re",
+//             "Sa"
+//         ],
 
-        pakad: [
-            ["Ga", "Re", "Sa"],
-            ["Dha", "Sa"],
-            ["Ga", "Pa", "Dha"]
-        ],
+//         pakad: [
+//             ["Ga", "Re", "Sa"],
+//             ["Dha", "Sa"],
+//             ["Ga", "Pa", "Dha"]
+//         ],
 
-        forbidden: [
-            "Ma",
-            "Ma# (Tivra Ma)",
-            "Ni",
-            "Ni♭ (Komal Ni)",
-            "Ga♭ (Komal Ga)",
-            "Re♭ (Komal Re)",
-            "Dha♭ (Komal Dha)"
-        ],
+//         forbidden: [
+//             "Ma",
+//             "Ma# (Tivra Ma)",
+//             "Ni",
+//             "Ni♭ (Komal Ni)",
+//             "Ga♭ (Komal Ga)",
+//             "Re♭ (Komal Re)",
+//             "Dha♭ (Komal Dha)"
+//         ],
 
-        vadi: "Ga",
-        samvadi: "Dha"
-    },
+//         vadi: "Ga",
+//         samvadi: "Dha"
+//     },
 
-    {
-        name: "Shivranjani",
+//     {
+//         name: "Shivranjani",
 
-        swaras: [
-            "Sa",
-            "Re",
-            "Ga♭ (Komal Ga)",
-            "Pa",
-            "Dha"
-        ],
+//         swaras: [
+//             "Sa",
+//             "Re",
+//             "Ga♭ (Komal Ga)",
+//             "Pa",
+//             "Dha"
+//         ],
 
-        aaroh: [
-            "Sa",
-            "Re",
-            "Ga♭ (Komal Ga)",
-            "Pa",
-            "Dha",
-            "Sa"
-        ],
+//         aaroh: [
+//             "Sa",
+//             "Re",
+//             "Ga♭ (Komal Ga)",
+//             "Pa",
+//             "Dha",
+//             "Sa"
+//         ],
 
-        avaroh: [
-            "Sa",
-            "Dha",
-            "Pa",
-            "Ga♭ (Komal Ga)",
-            "Re",
-            "Sa"
-        ],
+//         avaroh: [
+//             "Sa",
+//             "Dha",
+//             "Pa",
+//             "Ga♭ (Komal Ga)",
+//             "Re",
+//             "Sa"
+//         ],
 
-        pakad: [
-            ["Dha", "Pa", "Ga♭ (Komal Ga)", "Re"],
-            ["Ga♭ (Komal Ga)", "Re", "Sa"],
-            ["Dha", "Sa"]
-        ],
+//         pakad: [
+//             ["Dha", "Pa", "Ga♭ (Komal Ga)", "Re"],
+//             ["Ga♭ (Komal Ga)", "Re", "Sa"],
+//             ["Dha", "Sa"]
+//         ],
 
-        forbidden: [
-            "Ma",
-            "Ma# (Tivra Ma)",
-            "Ni",
-            "Ni♭ (Komal Ni)",
-            "Ga"
-        ],
+//         forbidden: [
+//             "Ma",
+//             "Ma# (Tivra Ma)",
+//             "Ni",
+//             "Ni♭ (Komal Ni)",
+//             "Ga"
+//         ],
 
-        vadi: "Ga♭ (Komal Ga)",
-        samvadi: "Dha"
-    },
+//         vadi: "Ga♭ (Komal Ga)",
+//         samvadi: "Dha"
+//     },
 
-    {
-        name: "Ahir Bhairav",
+//     {
+//         name: "Ahir Bhairav",
 
-        swaras: [
-            "Sa",
-            "Re♭ (Komal Re)",
-            "Ga",
-            "Ma",
-            "Pa",
-            "Dha",
-            "Ni♭ (Komal Ni)"
-        ],
+//         swaras: [
+//             "Sa",
+//             "Re♭ (Komal Re)",
+//             "Ga",
+//             "Ma",
+//             "Pa",
+//             "Dha",
+//             "Ni♭ (Komal Ni)"
+//         ],
 
-        aaroh: [
-            "Sa",
-            "Re♭ (Komal Re)",
-            "Ga",
-            "Ma",
-            "Pa",
-            "Dha",
-            "Ni♭ (Komal Ni)",
-            "Sa"
-        ],
+//         aaroh: [
+//             "Sa",
+//             "Re♭ (Komal Re)",
+//             "Ga",
+//             "Ma",
+//             "Pa",
+//             "Dha",
+//             "Ni♭ (Komal Ni)",
+//             "Sa"
+//         ],
 
-        avaroh: [
-            "Sa",
-            "Ni♭ (Komal Ni)",
-            "Dha",
-            "Pa",
-            "Ma",
-            "Ga",
-            "Re♭ (Komal Re)",
-            "Sa"
-        ],
+//         avaroh: [
+//             "Sa",
+//             "Ni♭ (Komal Ni)",
+//             "Dha",
+//             "Pa",
+//             "Ma",
+//             "Ga",
+//             "Re♭ (Komal Re)",
+//             "Sa"
+//         ],
 
-        pakad: [
-            [
-                "Ni♭ (Komal Ni)",
-                "Sa",
-                "Re♭ (Komal Re)",
-                "Ga"
-            ],
-            [
-                "Ga",
-                "Ma",
-                "Ga",
-                "Re♭ (Komal Re)",
-                "Sa"
-            ]
-        ],
+//         pakad: [
+//             [
+//                 "Ni♭ (Komal Ni)",
+//                 "Sa",
+//                 "Re♭ (Komal Re)",
+//                 "Ga"
+//             ],
+//             [
+//                 "Ga",
+//                 "Ma",
+//                 "Ga",
+//                 "Re♭ (Komal Re)",
+//                 "Sa"
+//             ]
+//         ],
 
-        forbidden: [
-            "Re",
-            "Ga♭ (Komal Ga)",
-            "Ma# (Tivra Ma)",
-            "Dha♭ (Komal Dha)",
-            "Ni"
-        ],
+//         forbidden: [
+//             "Re",
+//             "Ga♭ (Komal Ga)",
+//             "Ma# (Tivra Ma)",
+//             "Dha♭ (Komal Dha)",
+//             "Ni"
+//         ],
 
-        vadi: "Dha",
-        samvadi: "Ga"
-    },
+//         vadi: "Dha",
+//         samvadi: "Ga"
+//     },
 
-    {
-        name: "Vrindavani Sarang",
+//     {
+//         name: "Vrindavani Sarang",
 
-        swaras: [
-            "Sa",
-            "Re",
-            "Ma",
-            "Pa",
-            "Ni"
-        ],
+//         swaras: [
+//             "Sa",
+//             "Re",
+//             "Ma",
+//             "Pa",
+//             "Ni"
+//         ],
 
-        aaroh: [
-            "Sa",
-            "Re",
-            "Ma",
-            "Pa",
-            "Ni",
-            "Sa"
-        ],
+//         aaroh: [
+//             "Sa",
+//             "Re",
+//             "Ma",
+//             "Pa",
+//             "Ni",
+//             "Sa"
+//         ],
 
-        avaroh: [
-            "Sa",
-            "Ni",
-            "Pa",
-            "Ma",
-            "Re",
-            "Sa"
-        ],
+//         avaroh: [
+//             "Sa",
+//             "Ni",
+//             "Pa",
+//             "Ma",
+//             "Re",
+//             "Sa"
+//         ],
 
-        pakad: [
-            ["Re", "Ma", "Pa", "Ni"],
-            ["Ni", "Pa", "Ma", "Re"],
-            ["Re", "Ma", "Pa"]
-        ],
+//         pakad: [
+//             ["Re", "Ma", "Pa", "Ni"],
+//             ["Ni", "Pa", "Ma", "Re"],
+//             ["Re", "Ma", "Pa"]
+//         ],
 
-        forbidden: [
-            "Ga",
-            "Ga♭ (Komal Ga)",
-            "Dha",
-            "Dha♭ (Komal Dha)",
-            "Ma# (Tivra Ma)",
-            "Re♭ (Komal Re)",
-            "Ni♭ (Komal Ni)"
-        ],
+//         forbidden: [
+//             "Ga",
+//             "Ga♭ (Komal Ga)",
+//             "Dha",
+//             "Dha♭ (Komal Dha)",
+//             "Ma# (Tivra Ma)",
+//             "Re♭ (Komal Re)",
+//             "Ni♭ (Komal Ni)"
+//         ],
 
-        vadi: "Re",
-        samvadi: "Pa"
-    }
-];
+//         vadi: "Re",
+//         samvadi: "Pa"
+//     }
+// ];
 
 /* ============================================================
    STATE
@@ -2941,7 +2941,185 @@ function updateRaga() {
     }
 }
 
-/* ============================================================
+// /* ============================================================
+//    RAGA IDENTIFICATION
+//    ============================================================ */
+
+// function identifyRaga(sequence) {
+
+//     let candidates = [];
+
+//     ragas.forEach(raga => {
+
+//         const uniqueNotes =
+//             new Set(sequence);
+
+//         /*
+//          * -------------------------------------
+//          * 1. SWARA COVERAGE
+//          * -------------------------------------
+//          */
+
+//         let matching = 0;
+
+//         raga.swaras.forEach(s => {
+
+//             if (uniqueNotes.has(s)) {
+//                 matching++;
+//             }
+//         });
+
+//         const coverage =
+//             (
+//                 matching /
+//                 raga.swaras.length
+//             ) * 100;
+
+//         /*
+//          * -------------------------------------
+//          * 2. FORBIDDEN SWARAS
+//          * -------------------------------------
+//          */
+
+//         let forbiddenCount = 0;
+
+//         raga.forbidden.forEach(s => {
+
+//             if (uniqueNotes.has(s)) {
+//                 forbiddenCount++;
+//             }
+//         });
+
+//         /*
+//          * -------------------------------------
+//          * 3. PAKAD
+//          * -------------------------------------
+//          */
+
+//         const pakadScore =
+//             calculatePakadScore(
+//                 sequence,
+//                 raga.pakad
+//             );
+
+//         /*
+//          * -------------------------------------
+//          * 4. AAROH
+//          * -------------------------------------
+//          */
+
+//         const aarohScore =
+//             calculateDirectionalScore(
+//                 sequence,
+//                 raga.aaroh
+//             );
+
+//         /*
+//          * -------------------------------------
+//          * 5. AVAROH
+//          * -------------------------------------
+//          */
+
+//         const avarohScore =
+//             calculateDirectionalScore(
+//                 sequence,
+//                 raga.avaroh
+//             );
+
+//         /*
+//          * -------------------------------------
+//          * 6. VADI / SAMVADI
+//          * -------------------------------------
+//          */
+
+//         const dominant =
+//             calculateDominantSwara();
+
+//         let vadiScore = 0;
+//         let samvadiScore = 0;
+
+//         if (
+//             dominant &&
+//             dominant.name === raga.vadi
+//         ) {
+//             vadiScore = 100;
+//         }
+
+//         if (
+//             dominant &&
+//             dominant.name === raga.samvadi
+//         ) {
+//             samvadiScore = 100;
+//         }
+
+//         /*
+//          * -------------------------------------
+//          * FINAL SCORE
+//          * -------------------------------------
+//          */
+
+//         let score = 0;
+
+//         score += coverage * 0.25;
+
+//         score += pakadScore * 0.30;
+
+//         score += aarohScore * 0.15;
+
+//         score += avarohScore * 0.15;
+
+//         score += vadiScore * 0.10;
+
+//         score += samvadiScore * 0.05;
+
+//         /*
+//          * Strong penalty for forbidden notes.
+//          */
+
+//         if (forbiddenCount > 0) {
+
+//             score -=
+//                 forbiddenCount * 25;
+//         }
+
+//         score =
+//             Math.max(
+//                 0,
+//                 Math.min(
+//                     100,
+//                     score
+//                 )
+//             );
+
+//         candidates.push({
+
+//             raga: raga,
+
+//             confidence: score,
+
+//             coverage: coverage,
+
+//             pakadScore: pakadScore,
+
+//             aarohScore: aarohScore,
+
+//             avarohScore: avarohScore,
+
+//             forbiddenCount: forbiddenCount
+//         });
+//     });
+
+//     candidates.sort(
+//         (a, b) =>
+//             b.confidence -
+//             a.confidence
+//     );
+
+//     return candidates[0] || null;
+// }
+
+
+  /* ============================================================
    RAGA IDENTIFICATION
    ============================================================ */
 
@@ -3054,57 +3232,37 @@ function identifyRaga(sequence) {
 
         /*
          * -------------------------------------
-         * FINAL SCORE
+         * FINAL STRICT SCORE
          * -------------------------------------
          */
 
         let score = 0;
 
-        score += coverage * 0.25;
-
-        score += pakadScore * 0.30;
-
-        score += aarohScore * 0.15;
-
-        score += avarohScore * 0.15;
-
-        score += vadiScore * 0.10;
-
+        // Weight distribution fine-tuned for stricter musical adherence
+        score += coverage * 0.35;       // Swara coverage is paramount
+        score += pakadScore * 0.35;     // Catch phrases distinguish similar ragas
+        score += aarohScore * 0.10;
+        score += avarohScore * 0.10;
+        score += vadiScore * 0.05;
         score += samvadiScore * 0.05;
 
         /*
-         * Strong penalty for forbidden notes.
+         * FATAL penalty for forbidden notes. 
+         * If a singer hits a forbidden note, it aggressively tanks the score.
          */
-
         if (forbiddenCount > 0) {
-
-            score -=
-                forbiddenCount * 25;
+            score -= (forbiddenCount * 40); 
         }
 
-        score =
-            Math.max(
-                0,
-                Math.min(
-                    100,
-                    score
-                )
-            );
+        score = Math.max(0, Math.min(100, score));
 
         candidates.push({
-
             raga: raga,
-
             confidence: score,
-
             coverage: coverage,
-
             pakadScore: pakadScore,
-
             aarohScore: aarohScore,
-
             avarohScore: avarohScore,
-
             forbiddenCount: forbiddenCount
         });
     });
@@ -3117,7 +3275,6 @@ function identifyRaga(sequence) {
 
     return candidates[0] || null;
 }
-
 /* ============================================================
    PAKAD MATCHING
    ============================================================ */

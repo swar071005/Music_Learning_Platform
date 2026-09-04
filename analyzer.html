@@ -722,47 +722,75 @@ const swaras = [
 //   },
 // ];
 const ragas = [
-  {
-    name: "Yaman",
-    swaras: ["Sa","Re","Ga","Ma# (Tivra Ma)","Pa","Dha","Ni"],
-    aaroh: "Ni Re Ga Ma# Pa Dha Ni Sa",
-    avaroh: "Sa Ni Dha Pa Ma# Ga Re Sa",
-    pakad: ["Ni","Re","Ga","Ma# (Tivra Ma)"]
-  },
-
-  {
-    name: "Bhoopali",
-    swaras: ["Sa","Re","Ga","Pa","Dha"],
-    aaroh: "Sa Re Ga Pa Dha Sa",
-    avaroh: "Sa Dha Pa Ga Re Sa",
-    pakad: ["Ga","Re","Sa","Dha","Sa"]
-  },
-
-  {
-    name: "Vrindavani Sarang",
-    swaras: [
-      "Sa",
-      "Re",
-      "Ma",
-      "Pa",
-      "Ni"
-    ],
-    aaroh: "Sa Re Ma Pa Ni Sa",
-    avaroh: "Sa Ni Pa Ma Re Sa",
-    pakad: [
-      "Re",
-      "Ma",
-      "Pa",
-      "Ni",
-      "Pa",
-      "Ma",
-      "Re"
-    ]
-  },
-
-  
-];
-  
+    {
+        name: "Yaman",
+        swaras: ["Sa", "Re", "Ga", "Ma# (Tivra Ma)", "Pa", "Dha", "Ni"],
+        aaroh: ["Ni", "Re", "Ga", "Ma# (Tivra Ma)", "Pa", "Dha", "Ni", "Sa"],
+        avaroh: ["Sa", "Ni", "Dha", "Pa", "Ma# (Tivra Ma)", "Ga", "Re", "Sa"],
+        pakad: [
+            ["Ni", "Re", "Ga", "Ma# (Tivra Ma)"],
+            ["Ga", "Ma# (Tivra Ma)", "Pa"],
+            ["Dha", "Ni", "Re", "Ga"]
+        ],
+        forbidden: ["Ma", "Re♭ (Komal Re)", "Ga♭ (Komal Ga)", "Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)"],
+        vadi: "Ga",
+        samvadi: "Ni"
+    },
+    {
+        name: "Bhoopali",
+        swaras: ["Sa", "Re", "Ga", "Pa", "Dha"],
+        aaroh: ["Sa", "Re", "Ga", "Pa", "Dha", "Sa"],
+        avaroh: ["Sa", "Dha", "Pa", "Ga", "Re", "Sa"],
+        pakad: [
+            ["Ga", "Re", "Sa"],
+            ["Dha", "Sa"],
+            ["Ga", "Pa", "Dha"]
+        ],
+        forbidden: ["Ma", "Ma# (Tivra Ma)", "Ni", "Ni♭ (Komal Ni)", "Ga♭ (Komal Ga)", "Re♭ (Komal Re)", "Dha♭ (Komal Dha)"],
+        vadi: "Ga",
+        samvadi: "Dha"
+    },
+    {
+        name: "Shivranjani",
+        swaras: ["Sa", "Re", "Ga♭ (Komal Ga)", "Pa", "Dha"],
+        aaroh: ["Sa", "Re", "Ga♭ (Komal Ga)", "Pa", "Dha", "Sa"],
+        avaroh: ["Sa", "Dha", "Pa", "Ga♭ (Komal Ga)", "Re", "Sa"],
+        pakad: [
+            ["Dha", "Pa", "Ga♭ (Komal Ga)", "Re"],
+            ["Ga♭ (Komal Ga)", "Re", "Sa"],
+            ["Dha", "Sa"]
+        ],
+        forbidden: ["Ma", "Ma# (Tivra Ma)", "Ni", "Ni♭ (Komal Ni)", "Ga"],
+        vadi: "Ga♭ (Komal Ga)",
+        samvadi: "Dha"
+    },
+    {
+        name: "Malkauns",
+        swaras: ["Sa", "Ga♭ (Komal Ga)", "Ma", "Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)"],
+        aaroh: ["Sa", "Ga♭ (Komal Ga)", "Ma", "Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)", "Sa"],
+        avaroh: ["Sa", "Ni♭ (Komal Ni)", "Dha♭ (Komal Dha)", "Ma", "Ga♭ (Komal Ga)", "Sa"],
+        pakad: [
+            ["Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)", "Sa", "Ma"],
+            ["Ga♭ (Komal Ga)", "Ma", "Ga♭ (Komal Ga)", "Sa"]
+        ],
+        forbidden: ["Re", "Re♭ (Komal Re)", "Pa", "Ma# (Tivra Ma)", "Ga", "Dha", "Ni"],
+        vadi: "Ma",
+        samvadi: "Sa"
+    },
+    {
+        name: "Bhairavi",
+        swaras: ["Sa", "Re♭ (Komal Re)", "Ga♭ (Komal Ga)", "Ma", "Pa", "Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)"],
+        aaroh: ["Sa", "Re♭ (Komal Re)", "Ga♭ (Komal Ga)", "Ma", "Pa", "Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)", "Sa"],
+        avaroh: ["Sa", "Ni♭ (Komal Ni)", "Dha♭ (Komal Dha)", "Pa", "Ma", "Ga♭ (Komal Ga)", "Re♭ (Komal Re)", "Sa"],
+        pakad: [
+            ["Ma", "Ga♭ (Komal Ga)", "Sa", "Re♭ (Komal Re)", "Sa"],
+            ["Dha♭ (Komal Dha)", "Pa", "Ma", "Pa", "Ga♭ (Komal Ga)"]
+        ],
+        forbidden: ["Re", "Ga", "Ma# (Tivra Ma)", "Dha", "Ni"],
+        vadi: "Ma",
+        samvadi: "Sa"
+    }
+];  
 // UPLOAD AREA HANDLERS
 uploadArea.addEventListener('click', () => fileInput.click());
 

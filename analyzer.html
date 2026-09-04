@@ -2190,161 +2190,309 @@ function autoCorrelate(buf, sampleRate) {
     return sampleRate / bestLag;
 }
 
+// /* ============================================================
+//    TONIC / SA ESTIMATION
+//    ============================================================ */
+
+// function estimateTonic(history) {
+
+//     if (history.length < 30) {
+//         return null;
+//     }
+
+//     /*
+//      * Build pitch-class histogram.
+//      */
+
+//     const histogram =
+//         new Array(120).fill(0);
+
+//     history.forEach(freq => {
+
+//         if (freq <= 0) return;
+
+//         const midi =
+//             69 +
+//             12 *
+//             Math.log2(freq / 440);
+
+//         const pc =
+//             ((midi % 12) + 12) % 12;
+
+//         const index =
+//             Math.round(pc * 10) % 120;
+
+//         histogram[index] += 1;
+//     });
+
+//     let bestIndex = -1;
+//     let bestValue = 0;
+
+//     for (
+//         let i = 0;
+//         i < histogram.length;
+//         i++
+//     ) {
+
+//         if (histogram[i] > bestValue) {
+
+//             bestValue =
+//                 histogram[i];
+
+//             bestIndex = i;
+//         }
+//     }
+
+//     if (bestIndex < 0) {
+//         return null;
+//     }
+
+//     const pc = bestIndex / 10;
+
+//     /*
+//      * Estimate a practical tonic frequency
+//      * near the median observed frequency.
+//      */
+
+//     const sorted =
+//         [...history].sort((a, b) => a - b);
+
+//     const median =
+//         sorted[
+//             Math.floor(sorted.length / 2)
+//         ];
+
+//     let candidate =
+//         median;
+
+//     while (candidate > 220) {
+//         candidate /= 2;
+//     }
+
+//     while (candidate < 80) {
+//         candidate *= 2;
+//     }
+
+//     /*
+//      * Refine around candidate.
+//      */
+
+//     let bestFreq = candidate;
+//     let bestScore = -Infinity;
+
+//     for (
+//         let cents = -100;
+//         cents <= 100;
+//         cents += 2
+//     ) {
+
+//         const testFreq =
+//             candidate *
+//             Math.pow(2, cents / 1200);
+
+//         let score = 0;
+
+//         history.forEach(f => {
+
+//             const semitone =
+//                 12 *
+//                 Math.log2(
+//                     f / testFreq
+//                 );
+
+//             const nearest =
+//                 Math.round(semitone);
+
+//             const error =
+//                 Math.abs(
+//                     semitone -
+//                     nearest
+//                 );
+
+//             if (error < 0.08) {
+//                 score += 2;
+//             } else if (error < 0.15) {
+//                 score += 1;
+//             }
+//         });
+
+//         if (score > bestScore) {
+
+//             bestScore = score;
+//             bestFreq = testFreq;
+//         }
+//     }
+
+//     const confidence =
+//         Math.min(
+//             100,
+//             (
+//                 bestScore /
+//                 history.length /
+//                 2
+//             ) * 100
+//         );
+
+//     /*
+//      * Only accept a reasonably stable tonic.
+//      */
+
+//     if (confidence < 55) {
+//         return null;
+//     }
+
+//     return {
+//         frequency: bestFreq,
+//         confidence: confidence
+//     };
+// }
+
+// /* ============================================================
+//    FREQUENCY → SWARA
+//    ============================================================ */
+
+// function frequencyToSwara(freq, tonic) {
+
+//     if (
+//         !freq ||
+//         !tonic ||
+//         freq <= 0 ||
+//         tonic <= 0
+//     ) {
+//         return null;
+//     }
+
+//     /*
+//      * Relative semitone distance from Sa.
+//      */
+
+//     let semitone =
+//         12 *
+//         Math.log2(
+//             freq / tonic
+//         );
+
+//     /*
+//      * Bring into one octave.
+//      */
+
+//     semitone =
+//         ((semitone % 12) + 12) % 12;
+
+//     let best = null;
+//     let minError = Infinity;
+
+//     for (
+//         let i = 0;
+//         i < 12;
+//         i++
+//     ) {
+
+//         const error =
+//             Math.abs(
+//                 semitone -
+//                 i
+//             );
+
+//         const circularError =
+//             Math.min(
+//                 error,
+//                 12 - error
+//             );
+
+//         if (
+//             circularError <
+//             minError
+//         ) {
+
+//             minError =
+//                 circularError;
+
+//             best = {
+//                 name: SWARA_NAMES[i],
+//                 semitone: i
+//             };
+//         }
+//     }
+
+//     /*
+//      * Strict pitch tolerance.
+
+//      * 0.18 semitone ≈ 18 cents.
+//      */
+
+//     if (minError > 0.18) {
+//         return null;
+//     }
+
+//     return {
+//         name: best.name,
+//         error: minError
+//     };
+// }
+
+
 /* ============================================================
    TONIC / SA ESTIMATION
    ============================================================ */
 
 function estimateTonic(history) {
-
-    if (history.length < 30) {
-        return null;
-    }
-
-    /*
-     * Build pitch-class histogram.
-     */
-
-    const histogram =
-        new Array(120).fill(0);
-
+    if (history.length < 30) return null;
+    
+    const histogram = new Array(120).fill(0);
     history.forEach(freq => {
-
         if (freq <= 0) return;
-
-        const midi =
-            69 +
-            12 *
-            Math.log2(freq / 440);
-
-        const pc =
-            ((midi % 12) + 12) % 12;
-
-        const index =
-            Math.round(pc * 10) % 120;
-
+        const midi = 69 + 12 * Math.log2(freq / 440);
+        const pc = ((midi % 12) + 12) % 12;
+        const index = Math.round(pc * 10) % 120;
         histogram[index] += 1;
     });
 
     let bestIndex = -1;
     let bestValue = 0;
-
-    for (
-        let i = 0;
-        i < histogram.length;
-        i++
-    ) {
-
+    for (let i = 0; i < histogram.length; i++) {
         if (histogram[i] > bestValue) {
-
-            bestValue =
-                histogram[i];
-
+            bestValue = histogram[i];
             bestIndex = i;
         }
     }
+    if (bestIndex < 0) return null;
 
-    if (bestIndex < 0) {
-        return null;
-    }
-
-    const pc = bestIndex / 10;
-
-    /*
-     * Estimate a practical tonic frequency
-     * near the median observed frequency.
-     */
-
-    const sorted =
-        [...history].sort((a, b) => a - b);
-
-    const median =
-        sorted[
-            Math.floor(sorted.length / 2)
-        ];
-
-    let candidate =
-        median;
-
-    while (candidate > 220) {
-        candidate /= 2;
-    }
-
-    while (candidate < 80) {
-        candidate *= 2;
-    }
-
-    /*
-     * Refine around candidate.
-     */
+    const sorted = [...history].sort((a, b) => a - b);
+    const median = sorted[Math.floor(sorted.length / 2)];
+    let candidate = median;
+    while (candidate > 220) candidate /= 2;
+    while (candidate < 80) candidate *= 2;
 
     let bestFreq = candidate;
     let bestScore = -Infinity;
 
-    for (
-        let cents = -100;
-        cents <= 100;
-        cents += 2
-    ) {
-
-        const testFreq =
-            candidate *
-            Math.pow(2, cents / 1200);
-
+    for (let cents = -100; cents <= 100; cents += 2) {
+        const testFreq = candidate * Math.pow(2, cents / 1200);
         let score = 0;
-
         history.forEach(f => {
-
-            const semitone =
-                12 *
-                Math.log2(
-                    f / testFreq
-                );
-
-            const nearest =
-                Math.round(semitone);
-
-            const error =
-                Math.abs(
-                    semitone -
-                    nearest
-                );
-
-            if (error < 0.08) {
-                score += 2;
-            } else if (error < 0.15) {
-                score += 1;
-            }
+            const semitone = 12 * Math.log2(f / testFreq);
+            const nearest = Math.round(semitone);
+            const error = Math.abs(semitone - nearest);
+            // WIDENED TOLERANCES FOR HUMAN VOICE/VIBRATO
+            if (error < 0.25) score += 2;
+            else if (error < 0.45) score += 1;
         });
-
         if (score > bestScore) {
-
             bestScore = score;
             bestFreq = testFreq;
         }
     }
 
-    const confidence =
-        Math.min(
-            100,
-            (
-                bestScore /
-                history.length /
-                2
-            ) * 100
-        );
-
-    /*
-     * Only accept a reasonably stable tonic.
-     */
-
-    if (confidence < 55) {
+    const confidence = Math.min(100, (bestScore / history.length / 2) * 100);
+    
+    // LOWERED THRESHOLD: Accepts natural vocal fluctuations
+    // If we've gathered 90 frames of history, force a lock-in to prevent hanging
+    if (confidence < 30 && history.length < 90) {
         return null;
     }
-
-    return {
-        frequency: bestFreq,
-        confidence: confidence
-    };
+    
+    return { frequency: bestFreq, confidence: Math.max(confidence, 50) };
 }
 
 /* ============================================================
@@ -2352,85 +2500,26 @@ function estimateTonic(history) {
    ============================================================ */
 
 function frequencyToSwara(freq, tonic) {
-
-    if (
-        !freq ||
-        !tonic ||
-        freq <= 0 ||
-        tonic <= 0
-    ) {
-        return null;
-    }
-
-    /*
-     * Relative semitone distance from Sa.
-     */
-
-    let semitone =
-        12 *
-        Math.log2(
-            freq / tonic
-        );
-
-    /*
-     * Bring into one octave.
-     */
-
-    semitone =
-        ((semitone % 12) + 12) % 12;
+    if (!freq || !tonic || freq <= 0 || tonic <= 0) return null;
+    let semitone = 12 * Math.log2(freq / tonic);
+    semitone = ((semitone % 12) + 12) % 12;
 
     let best = null;
     let minError = Infinity;
 
-    for (
-        let i = 0;
-        i < 12;
-        i++
-    ) {
-
-        const error =
-            Math.abs(
-                semitone -
-                i
-            );
-
-        const circularError =
-            Math.min(
-                error,
-                12 - error
-            );
-
-        if (
-            circularError <
-            minError
-        ) {
-
-            minError =
-                circularError;
-
-            best = {
-                name: SWARA_NAMES[i],
-                semitone: i
-            };
+    for (let i = 0; i < 12; i++) {
+        const error = Math.abs(semitone - i);
+        const circularError = Math.min(error, 12 - error);
+        if (circularError < minError) {
+            minError = circularError;
+            best = { name: SWARA_NAMES[i], semitone: i };
         }
     }
 
-    /*
-     * Strict pitch tolerance.
-
-     * 0.18 semitone ≈ 18 cents.
-     */
-
-    if (minError > 0.18) {
-        return null;
-    }
-
-    return {
-        name: best.name,
-        error: minError
-    };
+    // WIDENED TOLERANCE: Increased from 0.18 to 0.40 to catch notes during glides/meend
+    if (minError > 0.40) return null;
+    return { name: best.name, error: minError };
 }
-
 /* ============================================================
    SWARA TIMELINE
    ============================================================ */

@@ -1720,10 +1720,16 @@ function showStatus(message, type = "info") {
 
 function handleAudioFile(file) {
 
-    if (!file.type.startsWith("audio/")) {
+    const validExtensions = ['.mp3', '.wav', '.ogg', '.flac', '.aac', '.m4a', '.webm', '.amr', '.wma', '.aiff', '.alac'];
+    const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    
+    const isAudioMime = file.type.startsWith("audio/");
+    const isAudioExt = validExtensions.includes(fileExtension);
+
+    if (!isAudioMime && !isAudioExt) {
 
         showStatus(
-            "❌ Please select an audio file.",
+            "❌ Please select a valid audio file.",
             "error"
         );
 
@@ -1765,6 +1771,53 @@ function handleAudioFile(file) {
         );
     }
 }
+// function handleAudioFile(file) {
+
+//     if (!file.type.startsWith("audio/")) {
+
+//         showStatus(
+//             "❌ Please select an audio file.",
+//             "error"
+//         );
+
+//         return;
+//     }
+
+//     try {
+
+//         const url = URL.createObjectURL(file);
+
+//         player.src = url;
+//         player.load();
+
+//         player.oncanplay = () => {
+
+//             showStatus(
+//                 `✅ Loaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
+//                 "success"
+//             );
+
+//             document.getElementById("startBtn").disabled = false;
+//         };
+
+//         player.onerror = () => {
+
+//             showStatus(
+//                 "❌ Browser cannot decode this audio format.",
+//                 "error"
+//             );
+
+//             document.getElementById("startBtn").disabled = true;
+//         };
+
+//     } catch (error) {
+
+//         showStatus(
+//             "❌ " + error.message,
+//             "error"
+//         );
+//     }
+// }
 
 /* ============================================================
    START

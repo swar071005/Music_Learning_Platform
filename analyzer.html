@@ -706,7 +706,15 @@ async function startAnalysis() {
         }
         await audioContext.resume();
 
-        swaraTimeline = []; pitchTimeline = []; freqHistory = []; graphData = []; timeStep = 0;
+        swaraTimeline = []; pitchTimeline = []; freqHistory = []; graphData = []; timeStep = 0; smoothedPitch = null;
+         pitchBuffer = [];
+        ragaHistory = [];
+
+          currentRaga = null;
+          currentRagaConfidence = 0;
+
+          tonicFrequency = null;
+          tonicConfidence = 0;
         lastSwara = null; lastSwaraTime = 0;
         tonicFrequency = null; tonicConfidence = 0;
         currentRaga = null; currentRagaConfidence = 0;
@@ -1036,15 +1044,17 @@ function analyze() {
 function autoCorrelate(buf, sampleRate) {
     const SIZE = buf.length;
 
-    // Calculate RMS
+    // -----------------------------
+    // 1. RMS / SILENCE DETECTION
+    // -----------------------------
     let rms = 0;
+
     for (let i = 0; i < SIZE; i++) {
         rms += buf[i] * buf[i];
     }
 
     rms = Math.sqrt(rms / SIZE);
 
-    // Ignore very quiet audio
     if (rms < 0.012) {
         return {
             frequency: -1,
@@ -1052,8 +1062,11 @@ function autoCorrelate(buf, sampleRate) {
         };
     }
 
-    // Remove DC offset
+    // -----------------------------
+    // 2. REMOVE DC OFFSET
+    // -----------------------------
     let mean = 0;
+
     for (let i = 0; i < SIZE; i++) {
         mean += buf[i];
     }
@@ -1066,14 +1079,18 @@ function autoCorrelate(buf, sampleRate) {
         signal[i] = buf[i] - mean;
     }
 
-    // Frequency range: 70 Hz - 1000 Hz
-    const minLag = Math.floor(sampleRate / 1000);
-    const maxLag = Math.floor(sampleRate / 70);
+    // -----------------------------
+    // 3. AUTOCORRELATION
+    // -----------------------------
+    const minFreq = 70;
+    const maxFreq = 1000;
+
+    const minLag = Math.floor(sampleRate / maxFreq);
+    const maxLag = Math.floor(sampleRate / minFreq);
 
     let bestLag = -1;
     let bestCorrelation = -1;
 
-    // Normalized autocorrelation
     for (let lag = minLag; lag <= maxLag; lag++) {
 
         let sum = 0;
@@ -1081,6 +1098,7 @@ function autoCorrelate(buf, sampleRate) {
         let energy2 = 0;
 
         for (let i = 0; i < SIZE - lag; i++) {
+
             const a = signal[i];
             const b = signal[i + lag];
 
@@ -1089,9 +1107,7 @@ function autoCorrelate(buf, sampleRate) {
             energy2 += b * b;
         }
 
-        if (energy1 === 0 || energy2 === 0) {
-            continue;
-        }
+        if (energy1 === 0 || energy2 === 0) continue;
 
         const correlation =
             sum / Math.sqrt(energy1 * energy2);
@@ -1102,69 +1118,90 @@ function autoCorrelate(buf, sampleRate) {
         }
     }
 
-    // No reliable pitch
-    if (bestLag <= 0 || bestCorrelation < 0.18) {
+    if (
+        bestLag <= 0 ||
+        bestCorrelation < 0.18
+    ) {
         return {
             frequency: -1,
             confidence: 0
         };
     }
 
-    // Parabolic interpolation for better frequency accuracy
+    // -----------------------------
+    // 4. PARABOLIC INTERPOLATION
+    // -----------------------------
     let refinedLag = bestLag;
 
-    if (bestLag > minLag && bestLag < maxLag) {
+    function getCorrelation(lag) {
 
-        const getCorrelation = (lag) => {
+        if (lag <= 0 || lag >= SIZE) return 0;
 
-            let sum = 0;
-            let energy1 = 0;
-            let energy2 = 0;
+        let sum = 0;
+        let energy1 = 0;
+        let energy2 = 0;
 
-            for (let i = 0; i < SIZE - lag; i++) {
-                const a = signal[i];
-                const b = signal[i + lag];
+        for (let i = 0; i < SIZE - lag; i++) {
 
-                sum += a * b;
-                energy1 += a * a;
-                energy2 += b * b;
-            }
+            const a = signal[i];
+            const b = signal[i + lag];
 
-            if (energy1 === 0 || energy2 === 0) {
-                return 0;
-            }
+            sum += a * b;
+            energy1 += a * a;
+            energy2 += b * b;
+        }
 
-            return sum / Math.sqrt(energy1 * energy2);
-        };
+        if (energy1 === 0 || energy2 === 0) {
+            return 0;
+        }
 
-        const left = getCorrelation(bestLag - 1);
-        const center = bestCorrelation;
-        const right = getCorrelation(bestLag + 1);
+        return sum / Math.sqrt(
+            energy1 * energy2
+        );
+    }
+
+    if (
+        bestLag > minLag &&
+        bestLag < maxLag
+    ) {
+
+        const left =
+            getCorrelation(bestLag - 1);
+
+        const center =
+            bestCorrelation;
+
+        const right =
+            getCorrelation(bestLag + 1);
 
         const denominator =
             2 * (2 * center - left - right);
 
         if (denominator !== 0) {
+
             refinedLag =
                 bestLag +
-                (left - right) / denominator;
+                (left - right) /
+                denominator;
         }
     }
 
-    const frequency = sampleRate / refinedLag;
+    const frequency =
+        sampleRate / refinedLag;
 
-    // Convert correlation into 0-1 confidence
-    const confidence = Math.max(
-        0,
-        Math.min(1, bestCorrelation)
-    );
+    const confidence =
+        Math.max(
+            0,
+            Math.min(1, bestCorrelation)
+        );
 
     return {
-        frequency: frequency,
-        confidence: confidence
+        frequency,
+        confidence
     };
 }
-/* ============================================================
+  
+  /* ============================================================
    SWARA TIMELINE & METRICS
    ============================================================ */
 
@@ -1436,73 +1473,456 @@ function updateRaga() {
     }
 }
 
+// function identifyRaga(sequence) {
+//     let candidates = [];
+//     ragas.forEach(raga => {
+//         const uniqueNotes = new Set(sequence);
+//         let matching = 0;
+//         raga.swaras.forEach(s => { if (uniqueNotes.has(s)) matching++; });
+//         const coverage = (matching / raga.swaras.length) * 100;
+
+//         let forbiddenCount = 0;
+//         raga.forbidden.forEach(s => { if (uniqueNotes.has(s)) forbiddenCount++; });
+
+//         const pakadScore = calculatePakadScore(sequence, raga.pakad);
+//         const aarohScore = calculateDirectionalScore(sequence, raga.aaroh);
+//         const avarohScore = calculateDirectionalScore(sequence, raga.avaroh);
+//         const dominant = calculateDominantSwara();
+
+//         let vadiScore = (dominant && dominant.name === raga.vadi) ? 100 : 0;
+//         let samvadiScore = (dominant && dominant.name === raga.samvadi) ? 100 : 0;
+
+//         let score = 0;
+//         score += coverage * 0.35;
+//         score += pakadScore * 0.35;
+//         score += aarohScore * 0.10;
+//         score += avarohScore * 0.10;
+//         score += vadiScore * 0.05;
+//         score += samvadiScore * 0.05;
+
+//         if (forbiddenCount > 0) score -= (forbiddenCount * 40); 
+//         score = Math.max(0, Math.min(100, score));
+
+//         candidates.push({ raga, confidence: score, coverage, pakadScore, aarohScore, avarohScore, forbiddenCount });
+//     });
+
+//     candidates.sort((a, b) => b.confidence - a.confidence);
+//     return candidates[0] || null;
+// }
 function identifyRaga(sequence) {
-    let candidates = [];
-    ragas.forEach(raga => {
-        const uniqueNotes = new Set(sequence);
-        let matching = 0;
-        raga.swaras.forEach(s => { if (uniqueNotes.has(s)) matching++; });
-        const coverage = (matching / raga.swaras.length) * 100;
 
-        let forbiddenCount = 0;
-        raga.forbidden.forEach(s => { if (uniqueNotes.has(s)) forbiddenCount++; });
+    if (
+        !sequence ||
+        sequence.length < 12
+    ) {
+        return null;
+    }
 
-        const pakadScore = calculatePakadScore(sequence, raga.pakad);
-        const aarohScore = calculateDirectionalScore(sequence, raga.aaroh);
-        const avarohScore = calculateDirectionalScore(sequence, raga.avaroh);
-        const dominant = calculateDominantSwara();
+    const candidates = [];
 
-        let vadiScore = (dominant && dominant.name === raga.vadi) ? 100 : 0;
-        let samvadiScore = (dominant && dominant.name === raga.samvadi) ? 100 : 0;
+    for (const raga of RAGAS) {
 
-        let score = 0;
-        score += coverage * 0.35;
-        score += pakadScore * 0.35;
-        score += aarohScore * 0.10;
-        score += avarohScore * 0.10;
-        score += vadiScore * 0.05;
-        score += samvadiScore * 0.05;
+        // --------------------------------
+        // 1. SWARA SET SCORE
+        // --------------------------------
+        const allowed =
+            new Set(raga.swaras);
 
-        if (forbiddenCount > 0) score -= (forbiddenCount * 40); 
-        score = Math.max(0, Math.min(100, score));
+        const uniqueDetected =
+            [...new Set(sequence)];
 
-        candidates.push({ raga, confidence: score, coverage, pakadScore, aarohScore, avarohScore, forbiddenCount });
-    });
+        let matched = 0;
 
-    candidates.sort((a, b) => b.confidence - a.confidence);
-    return candidates[0] || null;
-}
+        uniqueDetected.forEach(swara => {
 
-function calculatePakadScore(sequence, pakads) {
-    if (!sequence.length) return 0;
-    let best = 0;
-    pakads.forEach(pattern => {
-        if (pattern.length > sequence.length) return;
-        for (let i = 0; i <= sequence.length - pattern.length; i++) {
-            let matched = 0;
-            for (let j = 0; j < pattern.length; j++) {
-                if (sequence[i + j] === pattern[j]) matched++;
+            if (allowed.has(swara)) {
+                matched++;
             }
-            best = Math.max(best, (matched / pattern.length) * 100);
-        }
-    });
-    return best;
-}
+        });
 
-function calculateDirectionalScore(sequence, reference) {
-    if (sequence.length < 2 || reference.length < 2) return 0;
-    let matches = 0, total = 0;
-    for (let i = 0; i < sequence.length - 1; i++) {
-        const ai = reference.indexOf(sequence[i]);
-        const bi = reference.indexOf(sequence[i + 1]);
-        if (ai >= 0 && bi >= 0) {
-            total++;
-            if (Math.abs(bi - ai) <= 2) matches++;
+        const coverage =
+            (
+                matched /
+                allowed.size
+            ) * 100;
+
+        // --------------------------------
+        // 2. FORBIDDEN SWARAS
+        // --------------------------------
+        let forbiddenCount = 0;
+
+        sequence.forEach(swara => {
+
+            if (
+                raga.forbidden &&
+                raga.forbidden.includes(swara)
+            ) {
+                forbiddenCount++;
+            }
+        });
+
+        // --------------------------------
+        // 3. PAKAD
+        // --------------------------------
+        const pakadScore =
+            calculatePakadScore(
+                sequence,
+                raga.pakad
+            );
+
+        // --------------------------------
+        // 4. AAROH
+        // --------------------------------
+        const aarohScore =
+            calculateDirectionalScore(
+                sequence,
+                raga.aaroh
+            );
+
+        // --------------------------------
+        // 5. AVAROH
+        // --------------------------------
+        const avarohScore =
+            calculateDirectionalScore(
+                sequence,
+                raga.avaroh
+            );
+
+        // --------------------------------
+        // 6. VADI
+        // --------------------------------
+        const vadiCount =
+            sequence.filter(
+                x => x === raga.vadi
+            ).length;
+
+        const vadiScore =
+            Math.min(
+                100,
+                (vadiCount / sequence.length) * 500
+            );
+
+        // --------------------------------
+        // 7. SAMVADI
+        // --------------------------------
+        const samvadiCount =
+            sequence.filter(
+                x => x === raga.samvadi
+            ).length;
+
+        const samvadiScore =
+            Math.min(
+                100,
+                (samvadiCount / sequence.length) * 500
+            );
+
+        // --------------------------------
+        // 8. STABILITY
+        // --------------------------------
+        const stabilityScore =
+            calculateSequenceStability(sequence);
+
+        // --------------------------------
+        // 9. FORBIDDEN PENALTY
+        // --------------------------------
+        const forbiddenPenalty =
+            forbiddenCount * 12;
+
+        // --------------------------------
+        // 10. FINAL SCORE
+        // --------------------------------
+        let finalScore =
+            coverage * 0.25 +
+            pakadScore * 0.30 +
+            aarohScore * 0.10 +
+            avarohScore * 0.10 +
+            vadiScore * 0.05 +
+            samvadiScore * 0.05 +
+            stabilityScore * 0.15 -
+            forbiddenPenalty;
+
+        finalScore =
+            Math.max(
+                0,
+                Math.min(100, finalScore)
+            );
+
+        candidates.push({
+
+            name: raga.name,
+
+            confidence:
+                finalScore,
+
+            coverage:
+                coverage,
+
+            pakadScore:
+                pakadScore,
+
+            aarohScore:
+                aarohScore,
+
+            avarohScore:
+                avarohScore,
+
+            vadiScore:
+                vadiScore,
+
+            samvadiScore:
+                samvadiScore,
+
+            stabilityScore:
+                stabilityScore,
+
+            forbiddenCount:
+                forbiddenCount
+        });
+    }
+
+    // --------------------------------
+    // SORT BEST RAGA FIRST
+    // --------------------------------
+    candidates.sort(
+        (a, b) =>
+            b.confidence -
+            a.confidence
+    );
+
+    return candidates[0];
+}
+  
+// function calculatePakadScore(sequence, pakads) {
+//     if (!sequence.length) return 0;
+//     let best = 0;
+//     pakads.forEach(pattern => {
+//         if (pattern.length > sequence.length) return;
+//         for (let i = 0; i <= sequence.length - pattern.length; i++) {
+//             let matched = 0;
+//             for (let j = 0; j < pattern.length; j++) {
+//                 if (sequence[i + j] === pattern[j]) matched++;
+//             }
+//             best = Math.max(best, (matched / pattern.length) * 100);
+//         }
+//     });
+//     return best;
+// }
+function calculatePakadScore(
+    sequence,
+    pakads
+) {
+
+    if (
+        !pakads ||
+        pakads.length === 0
+    ) {
+        return 0;
+    }
+
+    let bestScore = 0;
+
+    for (const pattern of pakads) {
+
+        if (
+            pattern.length === 0 ||
+            sequence.length < pattern.length
+        ) {
+            continue;
+        }
+
+        for (
+            let i = 0;
+            i <= sequence.length - pattern.length;
+            i++
+        ) {
+
+            let exact = 0;
+            let close = 0;
+
+            for (
+                let j = 0;
+                j < pattern.length;
+                j++
+            ) {
+
+                if (
+                    sequence[i + j] ===
+                    pattern[j]
+                ) {
+                    exact++;
+                }
+                else if (
+                    j > 0 &&
+                    sequence[i + j - 1] ===
+                    pattern[j - 1]
+                ) {
+                    close++;
+                }
+            }
+
+            const score =
+                (
+                    exact * 100 +
+                    close * 30
+                ) /
+                pattern.length;
+
+            bestScore =
+                Math.max(
+                    bestScore,
+                    score
+                );
         }
     }
-    return total === 0 ? 0 : (matches / total) * 100;
+
+    return Math.min(
+        100,
+        bestScore
+    );
+}
+  
+// function calculateDirectionalScore(sequence, reference) {
+//     if (sequence.length < 2 || reference.length < 2) return 0;
+//     let matches = 0, total = 0;
+//     for (let i = 0; i < sequence.length - 1; i++) {
+//         const ai = reference.indexOf(sequence[i]);
+//         const bi = reference.indexOf(sequence[i + 1]);
+//         if (ai >= 0 && bi >= 0) {
+//             total++;
+//             if (Math.abs(bi - ai) <= 2) matches++;
+//         }
+//     }
+//     return total === 0 ? 0 : (matches / total) * 100;
+// }
+
+  //Aaroh / avroh
+function calculateDirectionalScore(
+    sequence,
+    reference
+) {
+
+    if (
+        !sequence ||
+        sequence.length < 2 ||
+        !reference ||
+        reference.length < 2
+    ) {
+        return 0;
+    }
+
+    const ref =
+        new Map();
+
+    reference.forEach(
+        (swara, index) => {
+            if (!ref.has(swara)) {
+                ref.set(swara, index);
+            }
+        }
+    );
+
+    let valid = 0;
+    let total = 0;
+
+    for (
+        let i = 0;
+        i < sequence.length - 1;
+        i++
+    ) {
+
+        const current =
+            sequence[i];
+
+        const next =
+            sequence[i + 1];
+
+        if (
+            !ref.has(current) ||
+            !ref.has(next)
+        ) {
+            continue;
+        }
+
+        const currentIndex =
+            ref.get(current);
+
+        const nextIndex =
+            ref.get(next);
+
+        total++;
+
+        // Correct movement
+        if (
+            nextIndex >= currentIndex &&
+            nextIndex - currentIndex <= 2
+        ) {
+            valid++;
+        }
+    }
+
+    if (total === 0) {
+        return 0;
+    }
+
+    return (
+        valid / total
+    ) * 100;
 }
 
+// Sequence Stability
+function calculateSequenceStability(
+    sequence
+) {
+
+    if (
+        !sequence ||
+        sequence.length < 4
+    ) {
+        return 0;
+    }
+
+    let changes = 0;
+
+    for (
+        let i = 1;
+        i < sequence.length;
+        i++
+    ) {
+
+        if (
+            sequence[i] !==
+            sequence[i - 1]
+        ) {
+            changes++;
+        }
+    }
+
+    const changeRate =
+        changes /
+        (sequence.length - 1);
+
+    // Moderate changes are musically useful.
+    // Extremely random changes are penalized.
+    if (changeRate < 0.10) {
+        return 70;
+    }
+
+    if (changeRate < 0.30) {
+        return 100;
+    }
+
+    if (changeRate < 0.60) {
+        return 90;
+    }
+
+    if (changeRate < 0.80) {
+        return 65;
+    }
+
+    return 40;
+}
+
+//Feedback
 function updateFeedback(result, accepted) {
     const feedback = document.getElementById("feedback");
     if (accepted) {
@@ -1580,134 +2000,253 @@ function drawGraph() {
 }
 
 // Estimate Tonic //
+// function estimateTonic(history) {
+
+//     if (!history || history.length < 30) {
+//         return null;
+//     }
+
+//     // Convert all frequencies to pitch classes
+//     const pitchClassHistogram = new Array(12).fill(0);
+
+//     history.forEach(freq => {
+
+//         if (!freq || freq <= 0) {
+//             return;
+//         }
+
+//         const midi =
+//             69 + 12 * Math.log2(freq / 440);
+
+//         const pitchClass =
+//             ((Math.round(midi) % 12) + 12) % 12;
+
+//         pitchClassHistogram[pitchClass]++;
+//     });
+
+//     // Find strongest pitch classes
+//     let strongestPC = 0;
+//     let strongestValue = 0;
+
+//     for (let i = 0; i < 12; i++) {
+
+//         if (pitchClassHistogram[i] > strongestValue) {
+//             strongestValue = pitchClassHistogram[i];
+//             strongestPC = i;
+//         }
+//     }
+
+//     if (strongestValue === 0) {
+//         return null;
+//     }
+
+//     /*
+//      * Test every pitch class as possible Sa.
+//      *
+//      * In Indian classical music:
+//      * Sa = 0
+//      * Pa = 7
+//      * Ma = 5
+//      */
+//     let bestPC = strongestPC;
+//     let bestScore = -Infinity;
+
+//     for (let candidate = 0; candidate < 12; candidate++) {
+
+//         const sa = pitchClassHistogram[candidate];
+
+//         const pa =
+//             pitchClassHistogram[(candidate + 7) % 12];
+
+//         const ma =
+//             pitchClassHistogram[(candidate + 5) % 12];
+
+//         const re =
+//             pitchClassHistogram[(candidate + 2) % 12];
+
+//         const ga =
+//             pitchClassHistogram[(candidate + 4) % 12];
+
+//         const dha =
+//             pitchClassHistogram[(candidate + 9) % 12];
+
+//         const ni =
+//             pitchClassHistogram[(candidate + 11) % 12];
+
+//         /*
+//          * Sa gets the highest importance.
+//          * Pa and Ma provide additional tonic support.
+//          */
+//         const score =
+//             sa * 4 +
+//             pa * 2 +
+//             ma * 1.2 +
+//             re * 0.5 +
+//             ga * 0.5 +
+//             dha * 0.5 +
+//             ni * 0.5;
+
+//         if (score > bestScore) {
+//             bestScore = score;
+//             bestPC = candidate;
+//         }
+//     }
+
+//     /*
+//      * Find actual frequencies belonging
+//      * to the selected tonic pitch class.
+//      */
+//     const tonicCandidates = [];
+
+//     history.forEach(freq => {
+
+//         if (!freq || freq <= 0) {
+//             return;
+//         }
+
+//         const midi =
+//             69 + 12 * Math.log2(freq / 440);
+
+//         const pc =
+//             ((Math.round(midi) % 12) + 12) % 12;
+
+//         if (pc === bestPC) {
+//             tonicCandidates.push(freq);
+//         }
+//     });
+
+//     if (tonicCandidates.length === 0) {
+//         return null;
+//     }
+
+//     // Median tonic frequency
+//     tonicCandidates.sort((a, b) => a - b);
+
+//     let tonic =
+//         tonicCandidates[
+//             Math.floor(tonicCandidates.length / 2)
+//         ];
+
+//     // Keep tonic in a practical octave range
+//     while (tonic > 220) {
+//         tonic /= 2;
+//     }
+
+//     while (tonic < 80) {
+//         tonic *= 2;
+//     }
+
+//     // Calculate confidence
+//     const total = history.filter(
+//         f => f && f > 0
+//     ).length;
+
+//     const confidence =
+//         Math.min(
+//             100,
+//             (tonicCandidates.length / total) * 100
+//         );
+
+//     return {
+//         frequency: tonic,
+//         confidence: confidence
+//     };
+// }
+
 function estimateTonic(history) {
 
-    if (!history || history.length < 30) {
+    if (
+        !history ||
+        history.length < 30
+    ) {
         return null;
     }
 
-    // Convert all frequencies to pitch classes
-    const pitchClassHistogram = new Array(12).fill(0);
+    const pitchClasses =
+        Array(12).fill(0);
 
+    const frequencies =
+        Array.from(
+            { length: 12 },
+            () => []
+        );
+
+    // -----------------------------
+    // BUILD PITCH CLASS HISTOGRAM
+    // -----------------------------
     history.forEach(freq => {
 
-        if (!freq || freq <= 0) {
+        if (
+            !freq ||
+            freq <= 0
+        ) {
             return;
         }
 
         const midi =
-            69 + 12 * Math.log2(freq / 440);
-
-        const pitchClass =
-            ((Math.round(midi) % 12) + 12) % 12;
-
-        pitchClassHistogram[pitchClass]++;
-    });
-
-    // Find strongest pitch classes
-    let strongestPC = 0;
-    let strongestValue = 0;
-
-    for (let i = 0; i < 12; i++) {
-
-        if (pitchClassHistogram[i] > strongestValue) {
-            strongestValue = pitchClassHistogram[i];
-            strongestPC = i;
-        }
-    }
-
-    if (strongestValue === 0) {
-        return null;
-    }
-
-    /*
-     * Test every pitch class as possible Sa.
-     *
-     * In Indian classical music:
-     * Sa = 0
-     * Pa = 7
-     * Ma = 5
-     */
-    let bestPC = strongestPC;
-    let bestScore = -Infinity;
-
-    for (let candidate = 0; candidate < 12; candidate++) {
-
-        const sa = pitchClassHistogram[candidate];
-
-        const pa =
-            pitchClassHistogram[(candidate + 7) % 12];
-
-        const ma =
-            pitchClassHistogram[(candidate + 5) % 12];
-
-        const re =
-            pitchClassHistogram[(candidate + 2) % 12];
-
-        const ga =
-            pitchClassHistogram[(candidate + 4) % 12];
-
-        const dha =
-            pitchClassHistogram[(candidate + 9) % 12];
-
-        const ni =
-            pitchClassHistogram[(candidate + 11) % 12];
-
-        /*
-         * Sa gets the highest importance.
-         * Pa and Ma provide additional tonic support.
-         */
-        const score =
-            sa * 4 +
-            pa * 2 +
-            ma * 1.2 +
-            re * 0.5 +
-            ga * 0.5 +
-            dha * 0.5 +
-            ni * 0.5;
-
-        if (score > bestScore) {
-            bestScore = score;
-            bestPC = candidate;
-        }
-    }
-
-    /*
-     * Find actual frequencies belonging
-     * to the selected tonic pitch class.
-     */
-    const tonicCandidates = [];
-
-    history.forEach(freq => {
-
-        if (!freq || freq <= 0) {
-            return;
-        }
-
-        const midi =
-            69 + 12 * Math.log2(freq / 440);
+            69 +
+            12 * Math.log2(
+                freq / 440
+            );
 
         const pc =
             ((Math.round(midi) % 12) + 12) % 12;
 
-        if (pc === bestPC) {
-            tonicCandidates.push(freq);
-        }
+        pitchClasses[pc]++;
+        frequencies[pc].push(freq);
     });
 
-    if (tonicCandidates.length === 0) {
+    let bestPC = 0;
+    let bestScore = -Infinity;
+
+    // -----------------------------
+    // TEST EVERY NOTE AS SA
+    // -----------------------------
+    for (let sa = 0; sa < 12; sa++) {
+
+        const pa = (sa + 7) % 12;
+        const ma = (sa + 5) % 12;
+
+        const re = (sa + 2) % 12;
+        const ga = (sa + 4) % 12;
+        const dha = (sa + 9) % 12;
+        const ni = (sa + 11) % 12;
+
+        const score =
+            pitchClasses[sa] * 4 +
+            pitchClasses[pa] * 2 +
+            pitchClasses[ma] * 1.2 +
+            pitchClasses[re] * 0.5 +
+            pitchClasses[ga] * 0.5 +
+            pitchClasses[dha] * 0.5 +
+            pitchClasses[ni] * 0.5;
+
+        if (score > bestScore) {
+
+            bestScore = score;
+            bestPC = sa;
+        }
+    }
+
+    if (
+        frequencies[bestPC].length < 5
+    ) {
         return null;
     }
 
-    // Median tonic frequency
-    tonicCandidates.sort((a, b) => a - b);
+    // -----------------------------
+    // MEDIAN SA FREQUENCY
+    // -----------------------------
+    const sorted =
+        [...frequencies[bestPC]]
+        .sort((a, b) => a - b);
 
     let tonic =
-        tonicCandidates[
-            Math.floor(tonicCandidates.length / 2)
+        sorted[
+            Math.floor(sorted.length / 2)
         ];
 
-    // Keep tonic in a practical octave range
+    // Bring Sa into practical range
     while (tonic > 220) {
         tonic /= 2;
     }
@@ -1716,15 +2255,13 @@ function estimateTonic(history) {
         tonic *= 2;
     }
 
-    // Calculate confidence
-    const total = history.filter(
-        f => f && f > 0
-    ).length;
-
     const confidence =
         Math.min(
             100,
-            (tonicCandidates.length / total) * 100
+            (
+                frequencies[bestPC].length /
+                history.length
+            ) * 100
         );
 
     return {
@@ -1732,7 +2269,7 @@ function estimateTonic(history) {
         confidence: confidence
     };
 }
-
+  
 //Frequency to swara//
 function frequencyToSwara(freq, tonic) {
 
@@ -1745,63 +2282,108 @@ function frequencyToSwara(freq, tonic) {
         return null;
     }
 
-    // Calculate distance from Sa in semitones
-    let semitone =
+    const semitones =
         12 * Math.log2(freq / tonic);
 
-    // Convert into one octave
-    semitone =
-        ((semitone % 12) + 12) % 12;
+    let normalized =
+        ((semitones % 12) + 12) % 12;
 
-    let bestIndex = 0;
-    let minError = Infinity;
+    let index =
+        Math.round(normalized) % 12;
 
-    // Find nearest swara
-    for (let i = 0; i < 12; i++) {
+    let error =
+        Math.abs(normalized - index);
 
-        const directError =
-            Math.abs(semitone - i);
+    // Handle circular distance
+    error =
+        Math.min(error, 12 - error);
 
-        const circularError =
-            Math.min(
-                directError,
-                12 - directError
-            );
+    // 40 cents tolerance
+    const maxError = 0.40;
 
-        if (circularError < minError) {
-
-            minError = circularError;
-            bestIndex = i;
-        }
-    }
-
-    // Too far from any swara
-    if (minError > 0.40) {
+    if (error > maxError) {
         return null;
     }
 
-    /*
-     * Convert error into confidence.
-     *
-     * 0 error  = 100% confidence
-     * 0.40 error = 0% confidence
-     */
     const confidence =
-        Math.max(
-            0,
-            Math.min(
-                1,
-                1 - (minError / 0.40)
-            )
-        );
+        1 - (error / maxError);
 
     return {
-        name: SWARA_NAMES[bestIndex],
-        semitone: bestIndex,
-        error: minError,
-        confidence: confidence
+        name: SWARA_NAMES[index],
+        index: index,
+        confidence: confidence,
+        semitone: normalized,
+        error: error
     };
 }
+// function frequencyToSwara(freq, tonic) {
+
+//     if (
+//         !freq ||
+//         !tonic ||
+//         freq <= 0 ||
+//         tonic <= 0
+//     ) {
+//         return null;
+//     }
+
+//     // Calculate distance from Sa in semitones
+//     let semitone =
+//         12 * Math.log2(freq / tonic);
+
+//     // Convert into one octave
+//     semitone =
+//         ((semitone % 12) + 12) % 12;
+
+//     let bestIndex = 0;
+//     let minError = Infinity;
+
+//     // Find nearest swara
+//     for (let i = 0; i < 12; i++) {
+
+//         const directError =
+//             Math.abs(semitone - i);
+
+//         const circularError =
+//             Math.min(
+//                 directError,
+//                 12 - directError
+//             );
+
+//         if (circularError < minError) {
+
+//             minError = circularError;
+//             bestIndex = i;
+//         }
+//     }
+
+//     // Too far from any swara
+//     if (minError > 0.40) {
+//         return null;
+//     }
+
+//     /*
+//      * Convert error into confidence.
+//      *
+//      * 0 error  = 100% confidence
+//      * 0.40 error = 0% confidence
+//      */
+//     const confidence =
+//         Math.max(
+//             0,
+//             Math.min(
+//                 1,
+//                 1 - (minError / 0.40)
+//             )
+//         );
+
+//     return {
+//         name: SWARA_NAMES[bestIndex],
+//         semitone: bestIndex,
+//         error: minError,
+//         confidence: confidence
+//     };
+// }
 </script>
 </body>
 </html>

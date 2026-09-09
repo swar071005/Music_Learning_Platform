@@ -942,13 +942,31 @@ function frequencyToSwara(freq, tonic) {
    SWARA TIMELINE & METRICS
    ============================================================ */
 
+// function addSwara(swara) {
+//     const now = performance.now();
+//     if (swara === lastSwara && now - lastSwaraTime < 250) return;
+//     swaraTimeline.push({ name: swara, time: player.currentTime });
+//     lastSwara = swara;
+//     lastSwaraTime = now;
+//     if (swaraTimeline.length > 150) swaraTimeline.shift();
+//     renderSwaraTimeline();
+// }
 function addSwara(swara) {
     const now = performance.now();
-    if (swara === lastSwara && now - lastSwaraTime < 250) return;
-    swaraTimeline.push({ name: swara, time: player.currentTime });
+
+    // Ignore extremely rapid repeated detections
+    if (swara === lastSwara && now - lastSwaraTime < 180) return;
+
+    swaraTimeline.push({
+        name: swara,
+        time: player.currentTime
+    });
+
     lastSwara = swara;
     lastSwaraTime = now;
-    if (swaraTimeline.length > 150) swaraTimeline.shift();
+
+    // KEEP THE WHOLE SONG HISTORY
+    // Do NOT remove old swaras
     renderSwaraTimeline();
 }
 
@@ -965,34 +983,142 @@ function renderSwaraTimeline() {
     }).join("");
 }
 
+// function calculateDominantSwara() {
+//     if (swaraTimeline.length < 5) return null;
+//     const stats = {};
+//     SWARA_NAMES.forEach(s => { stats[s] = { count: 0, duration: 0, transitions: 0, score: 0 }; });
+//     swaraTimeline.forEach(item => stats[item.name].count++);
+
+//     for (let i = 0; i < swaraTimeline.length - 1; i++) {
+//         const duration = Math.max(0, Math.min(2, swaraTimeline[i + 1].time - swaraTimeline[i].time));
+//         stats[swaraTimeline[i].name].duration += duration;
+//     }
+//     for (let i = 1; i < swaraTimeline.length; i++) {
+//         if (swaraTimeline[i].name === swaraTimeline[i - 1].name) stats[swaraTimeline[i].name].transitions++;
+//     }
+
+//     let maxCount = 1, maxDuration = 1, maxTransition = 1;
+//     SWARA_NAMES.forEach(s => {
+//         maxCount = Math.max(maxCount, stats[s].count);
+//         maxDuration = Math.max(maxDuration, stats[s].duration);
+//         maxTransition = Math.max(maxTransition, stats[s].transitions);
+//     });
+
+//     SWARA_NAMES.forEach(s => {
+//         stats[s].score = (stats[s].count / maxCount) * 0.45 + (stats[s].duration / maxDuration) * 0.35 + (stats[s].transitions / maxTransition) * 0.20;
+//     });
+
+//     return SWARA_NAMES.map(s => ({ name: s, score: stats[s].score })).sort((a, b) => b.score - a.score)[0];
+// }
+
 function calculateDominantSwara() {
-    if (swaraTimeline.length < 5) return null;
+    if (swaraTimeline.length < 8) return null;
+
     const stats = {};
-    SWARA_NAMES.forEach(s => { stats[s] = { count: 0, duration: 0, transitions: 0, score: 0 }; });
-    swaraTimeline.forEach(item => stats[item.name].count++);
 
-    for (let i = 0; i < swaraTimeline.length - 1; i++) {
-        const duration = Math.max(0, Math.min(2, swaraTimeline[i + 1].time - swaraTimeline[i].time));
-        stats[swaraTimeline[i].name].duration += duration;
-    }
-    for (let i = 1; i < swaraTimeline.length; i++) {
-        if (swaraTimeline[i].name === swaraTimeline[i - 1].name) stats[swaraTimeline[i].name].transitions++;
+    SWARA_NAMES.forEach(s => {
+        stats[s] = {
+            count: 0,
+            duration: 0,
+            stableDuration: 0,
+            score: 0
+        };
+    });
+
+    /*
+     * Count every detected swara in the COMPLETE song
+     */
+    for (let i = 0; i < swaraTimeline.length; i++) {
+        const current = swaraTimeline[i];
+        const next = swaraTimeline[i + 1];
+
+        if (!stats[current.name]) continue;
+
+        stats[current.name].count++;
+
+        /*
+         * Calculate how long the swara was held.
+         * Ignore unrealistically long gaps.
+         */
+        if (next) {
+            const duration = next.time - current.time;
+
+            if (duration > 0 && duration <= 1.5) {
+                stats[current.name].duration += duration;
+
+                /*
+                 * Sustained notes are stronger evidence
+                 * of a dominant/prominent swara.
+                 */
+                if (duration >= 0.30) {
+                    stats[current.name].stableDuration += duration;
+                }
+            }
+        }
     }
 
-    let maxCount = 1, maxDuration = 1, maxTransition = 1;
+    /*
+     * Find maximum values for normalization
+     */
+    let maxCount = 1;
+    let maxDuration = 1;
+    let maxStableDuration = 1;
+
     SWARA_NAMES.forEach(s => {
         maxCount = Math.max(maxCount, stats[s].count);
         maxDuration = Math.max(maxDuration, stats[s].duration);
-        maxTransition = Math.max(maxTransition, stats[s].transitions);
+        maxStableDuration = Math.max(
+            maxStableDuration,
+            stats[s].stableDuration
+        );
     });
 
+    /*
+     * Music-oriented scoring:
+     *
+     * 35% = occurrence
+     * 30% = total duration
+     * 35% = sustained/stable duration
+     *
+     * Stable notes are given high importance so that
+     * accidental pitch detections do not dominate.
+     */
     SWARA_NAMES.forEach(s => {
-        stats[s].score = (stats[s].count / maxCount) * 0.45 + (stats[s].duration / maxDuration) * 0.35 + (stats[s].transitions / maxTransition) * 0.20;
+
+        const countScore =
+            stats[s].count / maxCount;
+
+        const durationScore =
+            stats[s].duration / maxDuration;
+
+        const stableScore =
+            stats[s].stableDuration / maxStableDuration;
+
+        stats[s].score =
+            countScore * 0.35 +
+            durationScore * 0.30 +
+            stableScore * 0.35;
     });
 
-    return SWARA_NAMES.map(s => ({ name: s, score: stats[s].score })).sort((a, b) => b.score - a.score)[0];
-}
+    /*
+     * Sort by final score
+     */
+    const ranked = SWARA_NAMES
+        .map(s => ({
+            name: s,
+            score: stats[s].score,
+            count: stats[s].count,
+            duration: stats[s].duration,
+            stableDuration: stats[s].stableDuration
+        }))
+        .sort((a, b) => b.score - a.score);
 
+    /*
+     * Return the strongest swara
+     */
+    return ranked[0];
+}
+  
 function updateMetrics() {
     const variance = getVariance(freqHistory);
     let stability = variance < 15 ? "Excellent" : variance < 50 ? "Good" : variance < 120 ? "Average" : "Poor";

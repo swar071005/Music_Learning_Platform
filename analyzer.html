@@ -653,6 +653,156 @@ const ragas = [
     }
 ];
 
+//Signature Phrases//
+{
+    name: "Yaman",
+
+    allowedSwaras: [
+        "Sa", "Re", "Ga",
+        "Ma# (Tivra Ma)",
+        "Pa", "Dha", "Ni"
+    ],
+
+    forbiddenSwaras: [
+        "Re♭ (Komal Re)",
+        "Ga♭ (Komal Ga)",
+        "Ma",
+        "Dha♭ (Komal Dha)",
+        "Ni♭ (Komal Ni)"
+    ],
+
+    aaroh: [
+        "Ni", "Re", "Ga",
+        "Ma# (Tivra Ma)",
+        "Pa", "Dha", "Ni", "Sa"
+    ],
+
+    avaroh: [
+        "Sa", "Ni", "Dha",
+        "Pa", "Ma# (Tivra Ma)",
+        "Ga", "Re", "Sa"
+    ],
+
+    pakad: [
+        ["Ni", "Re", "Ga"],
+        ["Ga", "Ma# (Tivra Ma)", "Pa"],
+        ["Dha", "Ni", "Re", "Ga"]
+    ],
+
+    signaturePhrases: [
+        {
+            phrase: ["Ni", "Re", "Ga", "Ma# (Tivra Ma)"],
+            weight: 10
+        },
+        {
+            phrase: ["Ga", "Ma# (Tivra Ma)", "Pa"],
+            weight: 9
+        }
+    ],
+
+    vadi: "Ga",
+    samvadi: "Ni"
+}
+
+// ===============================
+// YAMAN
+// ===============================
+transitions: {
+    "Ni>Re": 1.00,
+    "Re>Ga": 0.95,
+    "Ga>Ma# (Tivra Ma)": 1.00,
+    "Ma# (Tivra Ma)>Pa": 0.95,
+    "Pa>Dha": 0.85,
+    "Dha>Ni": 0.90,
+    "Ni>Sa": 0.85,
+    "Ga>Re": 0.80,
+    "Re>Ni": 0.75
+}
+
+// ===============================
+// BHOOPALI
+// ===============================
+transitions: {
+    "Sa>Re": 1.00,
+    "Re>Ga": 0.95,
+    "Ga>Pa": 1.00,
+    "Pa>Dha": 0.95,
+    "Dha>Sa": 1.00,
+
+    "Sa>Dha": 0.90,
+    "Dha>Pa": 0.90,
+    "Pa>Ga": 0.85,
+    "Ga>Re": 0.90,
+    "Re>Sa": 0.95,
+
+    "Ga>Re": 0.95,
+    "Ga>Pa": 0.90
+}
+
+  // ===============================
+// SHIVRANJANI
+// ===============================
+transitions: {
+    "Sa>Re": 0.90,
+    "Re>Ga♭ (Komal Ga)": 1.00,
+    "Ga♭ (Komal Ga)>Pa": 0.90,
+    "Pa>Dha": 0.90,
+    "Dha>Sa": 0.95,
+
+    "Sa>Dha": 0.90,
+    "Dha>Pa": 1.00,
+    "Pa>Ga♭ (Komal Ga)": 0.95,
+    "Ga♭ (Komal Ga)>Re": 1.00,
+    "Re>Sa": 0.95,
+
+    "Ga♭ (Komal Ga)>Re": 1.00,
+    "Dha>Pa>Ga♭ (Komal Ga)": 1.00
+}
+
+  // ===============================
+// MALKAUNS
+// ===============================
+transitions: {
+    "Sa>Ga♭ (Komal Ga)": 1.00,
+    "Ga♭ (Komal Ga)>Ma": 0.95,
+    "Ma>Dha♭ (Komal Dha)": 0.95,
+    "Dha♭ (Komal Dha)>Ni♭ (Komal Ni)": 1.00,
+    "Ni♭ (Komal Ni)>Sa": 1.00,
+
+    "Sa>Ni♭ (Komal Ni)": 0.90,
+    "Ni♭ (Komal Ni)>Dha♭ (Komal Dha)": 0.95,
+    "Dha♭ (Komal Dha)>Ma": 0.95,
+    "Ma>Ga♭ (Komal Ga)": 0.90,
+    "Ga♭ (Komal Ga)>Sa": 1.00,
+
+    "Dha♭ (Komal Dha)>Ni♭ (Komal Ni)": 1.00,
+    "Ga♭ (Komal Ga)>Ma": 1.00,
+    "Ma>Ga♭ (Komal Ga)": 0.95
+}
+
+  // ===============================
+// BHAIRAVI
+// ===============================
+transitions: {
+    "Sa>Re♭ (Komal Re)": 1.00,
+    "Re♭ (Komal Re)>Ga♭ (Komal Ga)": 0.95,
+    "Ga♭ (Komal Ga)>Ma": 0.90,
+    "Ma>Pa": 0.90,
+    "Pa>Dha♭ (Komal Dha)": 0.95,
+    "Dha♭ (Komal Dha)>Ni♭ (Komal Ni)": 0.95,
+    "Ni♭ (Komal Ni)>Sa": 0.95,
+
+    "Sa>Ni♭ (Komal Ni)": 0.90,
+    "Ni♭ (Komal Ni)>Dha♭ (Komal Dha)": 0.95,
+    "Dha♭ (Komal Dha)>Pa": 1.00,
+    "Pa>Ma": 0.90,
+    "Ma>Ga♭ (Komal Ga)": 1.00,
+    "Ga♭ (Komal Ga)>Re♭ (Komal Re)": 0.95,
+    "Re♭ (Komal Re)>Sa": 1.00,
+
+    "Ma>Ga♭ (Komal Ga)": 1.00,
+    "Ga♭ (Komal Ga)>Sa": 1.00
+}
 /* ============================================================
    HELPERS
    ============================================================ */

@@ -785,51 +785,160 @@ player.addEventListener("ended", () => {
    MAIN ANALYSIS LOOP
    ============================================================ */
 
+// function analyze() {
+//     if (!isAnalyzing) return;
+//     const buffer = new Float32Array(analyser.fftSize);
+//     analyser.getFloatTimeDomainData(buffer);
+//     drawWaveform(buffer);
+
+//     const pitchFreq = autoCorrelate(buffer, audioContext.sampleRate);
+
+//     if (pitchFreq > 70 && pitchFreq < 1000) {
+//         freqHistory.push(pitchFreq);
+//         if (freqHistory.length > 120) freqHistory.shift();
+
+//         pitchTimeline.push({ frequency: pitchFreq, time: player.currentTime });
+//         if (pitchTimeline.length > 2000) pitchTimeline.shift();
+
+//         document.getElementById("freq-display").textContent = pitchFreq.toFixed(2) + " Hz";
+
+//         if (!tonicFrequency) {
+//             const tonicResult = estimateTonic(freqHistory);
+//             if (tonicResult) {
+//                 tonicFrequency = tonicResult.frequency;
+//                 tonicConfidence = tonicResult.confidence;
+//                 showStatus(`🎵 Sa detected around ${tonicFrequency.toFixed(2)} Hz`, "success");
+//             }
+//         }
+
+//         if (tonicFrequency) {
+//             const result = frequencyToSwara(pitchFreq, tonicFrequency);
+//             if (result) {
+//                 const swara = result.name;
+//                 document.getElementById("result").textContent = `${swara} (${pitchFreq.toFixed(2)} Hz)`;
+//                 addSwara(swara);
+
+//                 graphData.push({ x: timeStep++, y: swaraY[swara], s: swara });
+//                 if (graphData.length > 100) graphData.shift();
+//                 drawGraph();
+
+//                 updateMetrics();
+//                 updateRaga();
+//             }
+//         }
+//     }
+//     animationId = requestAnimationFrame(analyze);
+// }
+
 function analyze() {
     if (!isAnalyzing) return;
+
     const buffer = new Float32Array(analyser.fftSize);
     analyser.getFloatTimeDomainData(buffer);
+
     drawWaveform(buffer);
 
-    const pitchFreq = autoCorrelate(buffer, audioContext.sampleRate);
+    const pitchResult = autoCorrelate(buffer, audioContext.sampleRate);
 
-    if (pitchFreq > 70 && pitchFreq < 1000) {
-        freqHistory.push(pitchFreq);
-        if (freqHistory.length > 120) freqHistory.shift();
+    if (pitchResult && pitchResult.frequency > 70 && pitchResult.frequency < 1000) {
 
-        pitchTimeline.push({ frequency: pitchFreq, time: player.currentTime });
-        if (pitchTimeline.length > 2000) pitchTimeline.shift();
+        const pitchFreq = pitchResult.frequency;
+        const confidence = pitchResult.confidence;
 
-        document.getElementById("freq-display").textContent = pitchFreq.toFixed(2) + " Hz";
+        /*
+         * Reject weak / unreliable pitch detections.
+         * This helps remove tabla, noise and random harmonics.
+         */
+        if (confidence >= 0.35) {
 
-        if (!tonicFrequency) {
-            const tonicResult = estimateTonic(freqHistory);
-            if (tonicResult) {
-                tonicFrequency = tonicResult.frequency;
-                tonicConfidence = tonicResult.confidence;
-                showStatus(`🎵 Sa detected around ${tonicFrequency.toFixed(2)} Hz`, "success");
+            freqHistory.push(pitchFreq);
+
+            /*
+             * Keep a reasonably large recent history for tonic detection.
+             */
+            if (freqHistory.length > 180) {
+                freqHistory.shift();
             }
-        }
 
-        if (tonicFrequency) {
-            const result = frequencyToSwara(pitchFreq, tonicFrequency);
-            if (result) {
-                const swara = result.name;
-                document.getElementById("result").textContent = `${swara} (${pitchFreq.toFixed(2)} Hz)`;
-                addSwara(swara);
+            pitchTimeline.push({
+                frequency: pitchFreq,
+                confidence: confidence,
+                time: player.currentTime
+            });
 
-                graphData.push({ x: timeStep++, y: swaraY[swara], s: swara });
-                if (graphData.length > 100) graphData.shift();
-                drawGraph();
+            /*
+             * Keep complete pitch history.
+             */
+            if (pitchTimeline.length > 10000) {
+                pitchTimeline.shift();
+            }
 
-                updateMetrics();
-                updateRaga();
+            document.getElementById("freq-display").textContent =
+                pitchFreq.toFixed(2) + " Hz";
+
+            /*
+             * Detect Sa only after enough reliable pitch observations.
+             */
+            if (!tonicFrequency && freqHistory.length >= 40) {
+
+                const tonicResult = estimateTonic(freqHistory);
+
+                if (tonicResult && tonicResult.confidence >= 55) {
+
+                    tonicFrequency = tonicResult.frequency;
+                    tonicConfidence = tonicResult.confidence;
+
+                    showStatus(
+                        `🎵 Sa detected around ${tonicFrequency.toFixed(2)} Hz`,
+                        "success"
+                    );
+                }
+            }
+
+            /*
+             * Convert pitch to swara.
+             */
+            if (tonicFrequency) {
+
+                const result =
+                    frequencyToSwara(pitchFreq, tonicFrequency);
+
+                if (result && result.confidence >= 0.55) {
+
+                    const swara = result.name;
+
+                    document.getElementById("result").textContent =
+                        `${swara} (${pitchFreq.toFixed(2)} Hz)`;
+
+                    addSwara(
+                        swara,
+                        pitchFreq,
+                        confidence,
+                        result.confidence
+                    );
+
+                    graphData.push({
+                        x: timeStep++,
+                        y: swaraY[swara],
+                        s: swara
+                    });
+
+                    if (graphData.length > 150) {
+                        graphData.shift();
+                    }
+
+                    drawGraph();
+
+                    updateMetrics();
+                    updateRaga();
+                }
             }
         }
     }
+
     animationId = requestAnimationFrame(analyze);
 }
-
+  
 /* ============================================================
    PITCH DETECTION & TONIC
    ============================================================ */

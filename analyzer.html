@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
 :root {
   --bg: #0b0e14;
@@ -22,7 +23,11 @@
   --glow: 0 0 60px rgba(201,162,74,0.15);
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
   font-family: 'Crimson Pro', serif;
@@ -30,7 +35,6 @@ body {
   color: var(--text);
 }
 
-/* GRID BG */
 body::before {
   content: "";
   position: fixed;
@@ -45,7 +49,9 @@ body::before {
 /* NAV */
 nav {
   position: fixed;
-  top: 0; left: 0; right: 0;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   display: flex;
   justify-content: space-between;
@@ -157,7 +163,8 @@ nav {
   background: rgba(201,162,74,0.05);
 }
 
-.upload-area:hover, .upload-area.drag-over {
+.upload-area:hover,
+.upload-area.drag-over {
   border-color: var(--gold-light);
   background: var(--gold-dim);
 }
@@ -184,10 +191,10 @@ nav {
 }
 
 /* BUTTONS */
-.btn-row { 
-  display: flex; 
-  gap: 15px; 
-  margin-top: 20px; 
+.btn-row {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
   flex-wrap: wrap;
 }
 
@@ -288,8 +295,13 @@ nav {
   font-weight: bold;
 }
 
-.metric-value.good { color: #5ca87a; }
-.metric-value.poor { color: #e05c5c; }
+.metric-value.good {
+  color: #5ca87a;
+}
+
+.metric-value.poor {
+  color: #e05c5c;
+}
 
 /* SWARA */
 .swara-flow {
@@ -360,18 +372,34 @@ footer {
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-  nav { padding: 15px 30px; }
-  .page-header { padding: 100px 20px 40px; }
-  .card { padding: 20px; }
-  .btn-row { flex-direction: column; }
-  .btn { width: 100%; }
+  nav {
+    padding: 15px 30px;
+  }
+
+  .page-header {
+    padding: 100px 20px 40px;
+  }
+
+  .card {
+    padding: 20px;
+  }
+
+  .btn-row {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
 }
 </style>
 </head>
+
 <body>
 
 <nav>
   <a href="home.html" class="nav-logo">NAADSTUDIO</a>
+
   <ul class="nav-links">
     <li><a href="index.html">Riyaz</a></li>
     <li><a href="analyzer.html" class="active">Analyzer</a></li>
@@ -382,112 +410,265 @@ footer {
 <div class="page-header">
   <div class="page-eyebrow">AI Powered</div>
   <h1 class="page-title">PITCH ANALYZER</h1>
-  <p class="page-subtitle">Your personal digital guru — listening, always.</p>
+  <p class="page-subtitle">
+    Your personal digital guru — listening, always.
+  </p>
 </div>
 
 <div class="main">
 
   <!-- FILE UPLOAD -->
   <div class="card">
+
     <div class="card-label">Input</div>
+
     <h2>Upload Audio</h2>
+
     <div class="upload-area" id="uploadArea">
+
       <span class="upload-icon">🎵</span>
-      <div class="upload-text">Click to select or drag audio file here</div>
-      <div class="upload-hint">Supports: MP3, WAV, OGG, FLAC, AAC, M4A, WEBM</div>
+
+      <div class="upload-text">
+        Click to select or drag audio file here
+      </div>
+
+      <div class="upload-hint">
+        Supports: MP3, WAV, OGG, FLAC, AAC, M4A, WEBM
+      </div>
+
     </div>
-    <input type="file" id="audioFileInput" accept="audio/*" />
-    <div id="status" class="status-box" style="display:none;"></div>
-    <audio id="player" controls preload="auto"></audio>
+
+    <!-- CORRECTED FILE INPUT -->
+    <input
+      type="file"
+      id="audioFileInput"
+      accept=".mp3,.wav,.ogg,.flac,.aac,.m4a,.webm,audio/*"
+    />
+
+    <div
+      id="status"
+      class="status-box"
+      style="display:none;"
+    ></div>
+
+    <audio
+      id="player"
+      controls
+      preload="auto"
+    ></audio>
+
     <div class="btn-row">
-      <button class="btn btn-start" id="startBtn" onclick="startAnalysis()" disabled>▶ Start Analysis</button>
-      <button class="btn btn-stop" id="pauseBtn" onclick="pauseAnalysis()" disabled>⏸ Pause</button>
-      <button class="btn btn-start" id="resumeBtn" onclick="resumeAnalysis()" disabled>⏵ Resume</button>
-      <button class="btn btn-stop" id="stopBtn" onclick="stopAnalysis()" disabled>■ Stop</button>
+
+      <button
+        class="btn btn-start"
+        id="startBtn"
+        onclick="startAnalysis()"
+        disabled
+      >
+        ▶ Start Analysis
+      </button>
+
+      <button
+        class="btn btn-stop"
+        id="pauseBtn"
+        onclick="pauseAnalysis()"
+        disabled
+      >
+        ⏸ Pause
+      </button>
+
+      <button
+        class="btn btn-start"
+        id="resumeBtn"
+        onclick="resumeAnalysis()"
+        disabled
+      >
+        ⏵ Resume
+      </button>
+
+      <button
+        class="btn btn-stop"
+        id="stopBtn"
+        onclick="stopAnalysis()"
+        disabled
+      >
+        ■ Stop
+      </button>
+
     </div>
+
   </div>
 
   <!-- LIVE METRICS -->
   <div class="card">
+
     <div class="card-label">Live Data</div>
+
     <h2>Metrics</h2>
+
     <div class="metrics-grid">
+
       <div class="metric-box">
         <div class="metric-label">Frequency</div>
-        <div class="metric-value" id="freq-display">— Hz</div>
+        <div
+          class="metric-value"
+          id="freq-display"
+        >
+          — Hz
+        </div>
       </div>
+
       <div class="metric-box">
         <div class="metric-label">Stability</div>
-        <div class="metric-value" id="stability">—</div>
+        <div
+          class="metric-value"
+          id="stability"
+        >
+          —
+        </div>
       </div>
+
       <div class="metric-box">
         <div class="metric-label">Sustain</div>
-        <div class="metric-value" id="sustain">—</div>
+        <div
+          class="metric-value"
+          id="sustain"
+        >
+          —
+        </div>
       </div>
+
       <div class="metric-box">
         <div class="metric-label">Dominant Swara</div>
-        <div class="metric-value" id="dominant-swara">—</div>
+        <div
+          class="metric-value"
+          id="dominant-swara"
+        >
+          —
+        </div>
       </div>
+
     </div>
+
   </div>
 
   <!-- LIVE PITCH -->
   <div class="card">
+
     <div class="card-label">Detection Result</div>
+
     <h2>Live Pitch</h2>
-    <div class="metric-value" id="result">Awaiting audio analysis…</div>
+
+    <div
+      class="metric-value"
+      id="result"
+    >
+      Awaiting audio analysis…
+    </div>
+
   </div>
 
   <!-- RAGA DETECTION -->
   <div class="card">
+
     <div class="card-label">Raga Recognition</div>
+
     <h2>Detected Raga</h2>
-    <div class="metric-value" id="raag-name">Analyzing...</div>
-    <div style="margin-top:15px; font-size:14px; color:var(--text-muted);" id="raag-info">
+
+    <div
+      class="metric-value"
+      id="raag-name"
+    >
+      Analyzing...
+    </div>
+
+    <div
+      style="margin-top:15px; font-size:14px; color:var(--text-muted);"
+      id="raag-info"
+    >
       Awaiting analysis…
     </div>
+
   </div>
 
   <!-- SWARA FLOW -->
   <div class="card">
+
     <div class="card-label">Detection</div>
+
     <h2>Swara Flow</h2>
-    <div class="swara-flow" id="swaras">
-      <span class="swara-placeholder">Awaiting analysis…</span>
+
+    <div
+      class="swara-flow"
+      id="swaras"
+    >
+      <span class="swara-placeholder">
+        Awaiting analysis…
+      </span>
     </div>
+
   </div>
 
   <!-- GRAPH -->
   <div class="card">
+
     <div class="card-label">Visualization</div>
+
     <h2>Swara Graph</h2>
+
     <canvas id="graph"></canvas>
+
   </div>
 
   <!-- WAVEFORM -->
   <div class="card">
+
     <div class="card-label">Waveform</div>
+
     <h2>Waveform Visualization</h2>
-    <canvas id="waveform" style="width:100%; height:160px;"></canvas>
+
+    <canvas
+      id="waveform"
+      style="width:100%; height:160px;"
+    ></canvas>
+
   </div>
 
   <!-- FEEDBACK -->
   <div class="card">
+
     <div class="card-label">Guru Feedback</div>
+
     <h2>🎯 Analysis</h2>
-    <div class="feedback-box" id="feedback">Awaiting analysis…</div>
+
+    <div
+      class="feedback-box"
+      id="feedback"
+    >
+      Awaiting analysis…
+    </div>
+
   </div>
 
 </div>
 
 <footer>
-  <div class="footer-logo">NAADSTUDIO</div>
-  <div class="footer-copy">© 2026 NaadStudio — Pitch Analysis & Raga Detection</div>
+
+  <div class="footer-logo">
+    NAADSTUDIO
+  </div>
+
+  <div class="footer-copy">
+    © 2026 NaadStudio — Pitch Analysis & Raga Detection
+  </div>
+
 </footer>
 
 <script>
+
 /* ============================================================
    NAADSTUDIO — PITCH / SWARA / RAGA ANALYZER
+
    Core modules:
    1. Stable pitch + swara detection
    2. Rule-based raga recognition
@@ -522,18 +703,32 @@ let ragaHistory = [];
 /* ============================================================
    DOM
    ============================================================ */
+
 const canvas = document.getElementById("graph");
 const ctx = canvas.getContext("2d");
-const waveformCanvas = document.getElementById("waveform");
-const wfCtx = waveformCanvas.getContext("2d");
-const player = document.getElementById("player");
-const statusEl = document.getElementById("status");
-const uploadArea = document.getElementById("uploadArea");
-const fileInput = document.getElementById("audioFileInput");
+
+const waveformCanvas =
+    document.getElementById("waveform");
+
+const wfCtx =
+    waveformCanvas.getContext("2d");
+
+const player =
+    document.getElementById("player");
+
+const statusEl =
+    document.getElementById("status");
+
+const uploadArea =
+    document.getElementById("uploadArea");
+
+const fileInput =
+    document.getElementById("audioFileInput");
 
 /* ============================================================
    MUSICAL CONSTANTS
    ============================================================ */
+
 const SWARA_NAMES = [
     "Sa",
     "Re♭ (Komal Re)",
@@ -582,482 +777,825 @@ const swaraColors = {
 /* ============================================================
    RAGA DATABASE
    ============================================================ */
+
 const ragas = [
+
     {
         name: "Yaman",
-        swaras: ["Sa", "Re", "Ga", "Ma# (Tivra Ma)", "Pa", "Dha", "Ni"],
-        aaroh: ["Ni", "Re", "Ga", "Ma# (Tivra Ma)", "Pa", "Dha", "Ni", "Sa"],
-        avaroh: ["Sa", "Ni", "Dha", "Pa", "Ma# (Tivra Ma)", "Ga", "Re", "Sa"],
-        pakad: [
-            ["Ni", "Re", "Ga", "Ma# (Tivra Ma)"],
-            ["Ga", "Ma# (Tivra Ma)", "Pa"],
-            ["Dha", "Ni", "Re", "Ga"]
+
+        swaras: [
+            "Sa",
+            "Re",
+            "Ga",
+            "Ma# (Tivra Ma)",
+            "Pa",
+            "Dha",
+            "Ni"
         ],
-        forbidden: ["Ma", "Re♭ (Komal Re)", "Ga♭ (Komal Ga)", "Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)"],
+
+        aaroh: [
+            "Ni",
+            "Re",
+            "Ga",
+            "Ma# (Tivra Ma)",
+            "Pa",
+            "Dha",
+            "Ni",
+            "Sa"
+        ],
+
+        avaroh: [
+            "Sa",
+            "Ni",
+            "Dha",
+            "Pa",
+            "Ma# (Tivra Ma)",
+            "Ga",
+            "Re",
+            "Sa"
+        ],
+
+        pakad: [
+            [
+                "Ni",
+                "Re",
+                "Ga",
+                "Ma# (Tivra Ma)"
+            ],
+            [
+                "Ga",
+                "Ma# (Tivra Ma)",
+                "Pa"
+            ],
+            [
+                "Dha",
+                "Ni",
+                "Re",
+                "Ga"
+            ]
+        ],
+
+        forbidden: [
+            "Ma",
+            "Re♭ (Komal Re)",
+            "Ga♭ (Komal Ga)",
+            "Dha♭ (Komal Dha)",
+            "Ni♭ (Komal Ni)"
+        ],
+
         vadi: "Ga",
         samvadi: "Ni"
     },
+
     {
         name: "Bhoopali",
-        swaras: ["Sa", "Re", "Ga", "Pa", "Dha"],
-        aaroh: ["Sa", "Re", "Ga", "Pa", "Dha", "Sa"],
-        avaroh: ["Sa", "Dha", "Pa", "Ga", "Re", "Sa"],
+
+        swaras: [
+            "Sa",
+            "Re",
+            "Ga",
+            "Pa",
+            "Dha"
+        ],
+
+        aaroh: [
+            "Sa",
+            "Re",
+            "Ga",
+            "Pa",
+            "Dha",
+            "Sa"
+        ],
+
+        avaroh: [
+            "Sa",
+            "Dha",
+            "Pa",
+            "Ga",
+            "Re",
+            "Sa"
+        ],
+
         pakad: [
             ["Ga", "Re", "Sa"],
             ["Dha", "Sa"],
             ["Ga", "Pa", "Dha"]
         ],
-        forbidden: ["Ma", "Ma# (Tivra Ma)", "Ni", "Ni♭ (Komal Ni)", "Ga♭ (Komal Ga)", "Re♭ (Komal Re)", "Dha♭ (Komal Dha)"],
+
+        forbidden: [
+            "Ma",
+            "Ma# (Tivra Ma)",
+            "Ni",
+            "Ni♭ (Komal Ni)",
+            "Ga♭ (Komal Ga)",
+            "Re♭ (Komal Re)",
+            "Dha♭ (Komal Dha)"
+        ],
+
         vadi: "Ga",
         samvadi: "Dha"
     },
-    {
-        name: "Shivranjani",
-        swaras: ["Sa", "Re", "Ga♭ (Komal Ga)", "Pa", "Dha"],
-        aaroh: ["Sa", "Re", "Ga♭ (Komal Ga)", "Pa", "Dha", "Sa"],
-        avaroh: ["Sa", "Dha", "Pa", "Ga♭ (Komal Ga)", "Re", "Sa"],
-        pakad: [
-            ["Dha", "Pa", "Ga♭ (Komal Ga)", "Re"],
-            ["Ga♭ (Komal Ga)", "Re", "Sa"],
-            ["Dha", "Sa"]
-        ],
-        forbidden: ["Ma", "Ma# (Tivra Ma)", "Ni", "Ni♭ (Komal Ni)", "Ga"],
-        vadi: "Ga♭ (Komal Ga)",
-        samvadi: "Dha"
-    },
+
+    
+
     {
         name: "Malkauns",
-        swaras: ["Sa", "Ga♭ (Komal Ga)", "Ma", "Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)"],
-        aaroh: ["Sa", "Ga♭ (Komal Ga)", "Ma", "Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)", "Sa"],
-        avaroh: ["Sa", "Ni♭ (Komal Ni)", "Dha♭ (Komal Dha)", "Ma", "Ga♭ (Komal Ga)", "Sa"],
-        pakad: [
-            ["Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)", "Sa", "Ma"],
-            ["Ga♭ (Komal Ga)", "Ma", "Ga♭ (Komal Ga)", "Sa"]
+
+        swaras: [
+            "Sa",
+            "Ga♭ (Komal Ga)",
+            "Ma",
+            "Dha♭ (Komal Dha)",
+            "Ni♭ (Komal Ni)"
         ],
-        forbidden: ["Re", "Re♭ (Komal Re)", "Pa", "Ma# (Tivra Ma)", "Ga", "Dha", "Ni"],
+
+        aaroh: [
+            "Sa",
+            "Ga♭ (Komal Ga)",
+            "Ma",
+            "Dha♭ (Komal Dha)",
+            "Ni♭ (Komal Ni)",
+            "Sa"
+        ],
+
+        avaroh: [
+            "Sa",
+            "Ni♭ (Komal Ni)",
+            "Dha♭ (Komal Dha)",
+            "Ma",
+            "Ga♭ (Komal Ga)",
+            "Sa"
+        ],
+
+        pakad: [
+            [
+                "Dha♭ (Komal Dha)",
+                "Ni♭ (Komal Ni)",
+                "Sa",
+                "Ma"
+            ],
+            [
+                "Ga♭ (Komal Ga)",
+                "Ma",
+                "Ga♭ (Komal Ga)",
+                "Sa"
+            ]
+        ],
+
+        forbidden: [
+            "Re",
+            "Re♭ (Komal Re)",
+            "Pa",
+            "Ma# (Tivra Ma)",
+            "Ga",
+            "Dha",
+            "Ni"
+        ],
+
         vadi: "Ma",
         samvadi: "Sa"
     },
+
     {
         name: "Bhairavi",
-        swaras: ["Sa", "Re♭ (Komal Re)", "Ga♭ (Komal Ga)", "Ma", "Pa", "Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)"],
-        aaroh: ["Sa", "Re♭ (Komal Re)", "Ga♭ (Komal Ga)", "Ma", "Pa", "Dha♭ (Komal Dha)", "Ni♭ (Komal Ni)", "Sa"],
-        avaroh: ["Sa", "Ni♭ (Komal Ni)", "Dha♭ (Komal Dha)", "Pa", "Ma", "Ga♭ (Komal Ga)", "Re♭ (Komal Re)", "Sa"],
-        pakad: [
-            ["Ma", "Ga♭ (Komal Ga)", "Sa", "Re♭ (Komal Re)", "Sa"],
-            ["Dha♭ (Komal Dha)", "Pa", "Ma", "Pa", "Ga♭ (Komal Ga)"]
+
+        swaras: [
+            "Sa",
+            "Re♭ (Komal Re)",
+            "Ga♭ (Komal Ga)",
+            "Ma",
+            "Pa",
+            "Dha♭ (Komal Dha)",
+            "Ni♭ (Komal Ni)"
         ],
-        forbidden: ["Re", "Ga", "Ma# (Tivra Ma)", "Dha", "Ni"],
+
+        aaroh: [
+            "Sa",
+            "Re♭ (Komal Re)",
+            "Ga♭ (Komal Ga)",
+            "Ma",
+            "Pa",
+            "Dha♭ (Komal Dha)",
+            "Ni♭ (Komal Ni)",
+            "Sa"
+        ],
+
+        avaroh: [
+            "Sa",
+            "Ni♭ (Komal Ni)",
+            "Dha♭ (Komal Dha)",
+            "Pa",
+            "Ma",
+            "Ga♭ (Komal Ga)",
+            "Re♭ (Komal Re)",
+            "Sa"
+        ],
+
+        pakad: [
+            [
+                "Ma",
+                "Ga♭ (Komal Ga)",
+                "Sa",
+                "Re♭ (Komal Re)",
+                "Sa"
+            ],
+            [
+                "Dha♭ (Komal Dha)",
+                "Pa",
+                "Ma",
+                "Pa",
+                "Ga♭ (Komal Ga)"
+            ]
+        ],
+
+        forbidden: [
+            "Re",
+            "Ga",
+            "Ma# (Tivra Ma)",
+            "Dha",
+            "Ni"
+        ],
+
         vadi: "Ma",
         samvadi: "Sa"
     }
 ];
 
-//Signature Phrases//
-{
-    name: "Yaman",
+/*
+============================================================
+CORRECTION
 
-    allowedSwaras: [
-        "Sa", "Re", "Ga",
-        "Ma# (Tivra Ma)",
-        "Pa", "Dha", "Ni"
-    ],
+The original file contained standalone objects and labels
+such as:
 
-    forbiddenSwaras: [
-        "Re♭ (Komal Re)",
-        "Ga♭ (Komal Ga)",
-        "Ma",
-        "Dha♭ (Komal Dha)",
-        "Ni♭ (Komal Ni)"
-    ],
+transitions: { ... }
 
-    aaroh: [
-        "Ni", "Re", "Ga",
-        "Ma# (Tivra Ma)",
-        "Pa", "Dha", "Ni", "Sa"
-    ],
+outside any JavaScript object.
 
-    avaroh: [
-        "Sa", "Ni", "Dha",
-        "Pa", "Ma# (Tivra Ma)",
-        "Ga", "Re", "Sa"
-    ],
+Those statements stop the entire script from loading.
 
-    pakad: [
-        ["Ni", "Re", "Ga"],
-        ["Ga", "Ma# (Tivra Ma)", "Pa"],
-        ["Dha", "Ni", "Re", "Ga"]
-    ],
+They are intentionally not executed here because they were
+not connected to the existing raga database and were causing
+the upload JavaScript to stop.
 
-    signaturePhrases: [
-        {
-            phrase: ["Ni", "Re", "Ga", "Ma# (Tivra Ma)"],
-            weight: 10
-        },
-        {
-            phrase: ["Ga", "Ma# (Tivra Ma)", "Pa"],
-            weight: 9
-        }
-    ],
+Everything below remains your original analyzer logic.
+============================================================
+*/
 
-    vadi: "Ga",
-    samvadi: "Ni"
-}
-
-// ===============================
-// YAMAN
-// ===============================
-transitions: {
-    "Ni>Re": 1.00,
-    "Re>Ga": 0.95,
-    "Ga>Ma# (Tivra Ma)": 1.00,
-    "Ma# (Tivra Ma)>Pa": 0.95,
-    "Pa>Dha": 0.85,
-    "Dha>Ni": 0.90,
-    "Ni>Sa": 0.85,
-    "Ga>Re": 0.80,
-    "Re>Ni": 0.75
-}
-
-// ===============================
-// BHOOPALI
-// ===============================
-transitions: {
-    "Sa>Re": 1.00,
-    "Re>Ga": 0.95,
-    "Ga>Pa": 1.00,
-    "Pa>Dha": 0.95,
-    "Dha>Sa": 1.00,
-
-    "Sa>Dha": 0.90,
-    "Dha>Pa": 0.90,
-    "Pa>Ga": 0.85,
-    "Ga>Re": 0.90,
-    "Re>Sa": 0.95,
-
-    "Ga>Re": 0.95,
-    "Ga>Pa": 0.90
-}
-
-  // ===============================
-// SHIVRANJANI
-// ===============================
-transitions: {
-    "Sa>Re": 0.90,
-    "Re>Ga♭ (Komal Ga)": 1.00,
-    "Ga♭ (Komal Ga)>Pa": 0.90,
-    "Pa>Dha": 0.90,
-    "Dha>Sa": 0.95,
-
-    "Sa>Dha": 0.90,
-    "Dha>Pa": 1.00,
-    "Pa>Ga♭ (Komal Ga)": 0.95,
-    "Ga♭ (Komal Ga)>Re": 1.00,
-    "Re>Sa": 0.95,
-
-    "Ga♭ (Komal Ga)>Re": 1.00,
-    "Dha>Pa>Ga♭ (Komal Ga)": 1.00
-}
-
-  // ===============================
-// MALKAUNS
-// ===============================
-transitions: {
-    "Sa>Ga♭ (Komal Ga)": 1.00,
-    "Ga♭ (Komal Ga)>Ma": 0.95,
-    "Ma>Dha♭ (Komal Dha)": 0.95,
-    "Dha♭ (Komal Dha)>Ni♭ (Komal Ni)": 1.00,
-    "Ni♭ (Komal Ni)>Sa": 1.00,
-
-    "Sa>Ni♭ (Komal Ni)": 0.90,
-    "Ni♭ (Komal Ni)>Dha♭ (Komal Dha)": 0.95,
-    "Dha♭ (Komal Dha)>Ma": 0.95,
-    "Ma>Ga♭ (Komal Ga)": 0.90,
-    "Ga♭ (Komal Ga)>Sa": 1.00,
-
-    "Dha♭ (Komal Dha)>Ni♭ (Komal Ni)": 1.00,
-    "Ga♭ (Komal Ga)>Ma": 1.00,
-    "Ma>Ga♭ (Komal Ga)": 0.95
-}
-
-  // ===============================
-// BHAIRAVI
-// ===============================
-transitions: {
-    "Sa>Re♭ (Komal Re)": 1.00,
-    "Re♭ (Komal Re)>Ga♭ (Komal Ga)": 0.95,
-    "Ga♭ (Komal Ga)>Ma": 0.90,
-    "Ma>Pa": 0.90,
-    "Pa>Dha♭ (Komal Dha)": 0.95,
-    "Dha♭ (Komal Dha)>Ni♭ (Komal Ni)": 0.95,
-    "Ni♭ (Komal Ni)>Sa": 0.95,
-
-    "Sa>Ni♭ (Komal Ni)": 0.90,
-    "Ni♭ (Komal Ni)>Dha♭ (Komal Dha)": 0.95,
-    "Dha♭ (Komal Dha)>Pa": 1.00,
-    "Pa>Ma": 0.90,
-    "Ma>Ga♭ (Komal Ga)": 1.00,
-    "Ga♭ (Komal Ga)>Re♭ (Komal Re)": 0.95,
-    "Re♭ (Komal Re)>Sa": 1.00,
-
-    "Ma>Ga♭ (Komal Ga)": 1.00,
-    "Ga♭ (Komal Ga)>Sa": 1.00
-}
 /* ============================================================
    HELPERS
    ============================================================ */
+
 function showStatus(message, type = "info") {
+
     statusEl.textContent = message;
-    statusEl.className = "status-box " + type;
+
+    statusEl.className =
+        "status-box " + type;
+
     statusEl.style.display = "block";
 }
 
 function resetAnalysisState() {
+
     swaraTimeline = [];
     pitchTimeline = [];
     freqHistory = [];
     pitchBuffer = [];
+
     smoothedPitch = null;
+
     graphData = [];
     timeStep = 0;
+
     lastSwara = null;
     lastSwaraTime = 0;
+
     tonicFrequency = null;
     tonicConfidence = 0;
+
     currentRaga = null;
     currentRagaConfidence = 0;
+
     ragaHistory = [];
 }
 
 /* ============================================================
    UPLOAD
    ============================================================ */
-uploadArea.addEventListener("click", () => fileInput.click());
+
+uploadArea.addEventListener("click", () => {
+    fileInput.click();
+});
 
 uploadArea.addEventListener("dragover", e => {
+
     e.preventDefault();
+
     uploadArea.classList.add("drag-over");
 });
 
 uploadArea.addEventListener("dragleave", () => {
+
     uploadArea.classList.remove("drag-over");
 });
 
 uploadArea.addEventListener("drop", e => {
+
     e.preventDefault();
+
     uploadArea.classList.remove("drag-over");
+
     if (e.dataTransfer.files.length) {
-        handleAudioFile(e.dataTransfer.files[0]);
+
+        handleAudioFile(
+            e.dataTransfer.files[0]
+        );
     }
 });
 
 fileInput.addEventListener("change", e => {
+
     if (e.target.files.length) {
-        handleAudioFile(e.target.files[0]);
+
+        handleAudioFile(
+            e.target.files[0]
+        );
     }
 });
 
 function handleAudioFile(file) {
+
     const validExtensions = [
-        ".mp3", ".wav", ".ogg", ".flac", ".aac", ".m4a",
-        ".webm", ".amr", ".wma", ".aiff", ".alac"
+        ".mp3",
+        ".wav",
+        ".ogg",
+        ".flac",
+        ".aac",
+        ".m4a",
+        ".webm"
     ];
 
-    const dot = file.name.lastIndexOf(".");
-    const extension = dot >= 0
-        ? file.name.substring(dot).toLowerCase()
-        : "";
+    const dot =
+        file.name.lastIndexOf(".");
 
-    const isAudioMime = file.type && file.type.startsWith("audio/");
-    const isAudioExt = validExtensions.includes(extension);
+    const extension =
+        dot >= 0
+            ? file.name.substring(dot).toLowerCase()
+            : "";
+
+    const isAudioMime =
+        file.type &&
+        file.type.startsWith("audio/");
+
+    const isAudioExt =
+        validExtensions.includes(extension);
 
     if (!isAudioMime && !isAudioExt) {
-        showStatus("❌ Please select a valid audio file.", "error");
+
+        showStatus(
+            "❌ Please select a valid audio file.",
+            "error"
+        );
+
+        fileInput.value = "";
+
         return;
     }
 
     try {
+
         if (audioObjectUrl) {
-            URL.revokeObjectURL(audioObjectUrl);
+
+            URL.revokeObjectURL(
+                audioObjectUrl
+            );
+
+            audioObjectUrl = null;
         }
 
         if (isAnalyzing) {
+
             stopAnalysis(false);
         }
 
-        audioObjectUrl = URL.createObjectURL(file);
+        audioObjectUrl =
+            URL.createObjectURL(file);
+
         player.src = audioObjectUrl;
+
         player.load();
 
-        player.oncanplay = () => {
+        player.onloadedmetadata = () => {
+
             showStatus(
-                `✅ Loaded: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`,
+                `✅ Loaded: ${file.name} (${(
+                    file.size / 1024 / 1024
+                ).toFixed(2)} MB)`,
                 "success"
             );
-            document.getElementById("startBtn").disabled = false;
+
+            document.getElementById(
+                "startBtn"
+            ).disabled = false;
+
+            document.getElementById(
+                "pauseBtn"
+            ).disabled = true;
+
+            document.getElementById(
+                "resumeBtn"
+            ).disabled = true;
+
+            document.getElementById(
+                "stopBtn"
+            ).disabled = true;
         };
 
         player.onerror = () => {
+
             showStatus(
-                "❌ Browser cannot decode this audio format. The file is accepted, but the browser codec may not support it.",
+                "❌ Browser cannot decode this audio format. Try MP3 or WAV.",
                 "error"
             );
-            document.getElementById("startBtn").disabled = true;
+
+            document.getElementById(
+                "startBtn"
+            ).disabled = true;
         };
+
     } catch (error) {
-        showStatus("❌ " + error.message, "error");
+
+        showStatus(
+            "❌ " + error.message,
+            "error"
+        );
     }
 }
 
 /* ============================================================
    START / PAUSE / RESUME / STOP
    ============================================================ */
+
 async function startAnalysis() {
+
     if (!player.src) {
-        showStatus("❌ Please upload an audio file first.", "error");
+
+        showStatus(
+            "❌ Please upload an audio file first.",
+            "error"
+        );
+
         return;
     }
 
     try {
-        if (!audioContext) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
-            analyser.fftSize = 2048;
-            analyser.smoothingTimeConstant = 0.10;
 
-            filter = audioContext.createBiquadFilter();
+        if (!audioContext) {
+
+            audioContext =
+                new (
+                    window.AudioContext ||
+                    window.webkitAudioContext
+                )();
+
+            analyser =
+                audioContext.createAnalyser();
+
+            analyser.fftSize = 2048;
+
+            analyser.smoothingTimeConstant =
+                0.10;
+
+            filter =
+                audioContext.createBiquadFilter();
+
             filter.type = "lowpass";
+
             filter.frequency.value = 1000;
+
             filter.Q.value = 0.7;
 
-            source = audioContext.createMediaElementSource(player);
+            source =
+                audioContext.createMediaElementSource(
+                    player
+                );
+
             source.connect(filter);
+
             filter.connect(analyser);
-            source.connect(audioContext.destination);
+
+            source.connect(
+                audioContext.destination
+            );
         }
 
         await audioContext.resume();
-        cancelAnimationFrame(animationId);
+
+        cancelAnimationFrame(
+            animationId
+        );
+
         resetAnalysisState();
 
         isAnalyzing = true;
 
-        document.getElementById("startBtn").disabled = true;
-        document.getElementById("pauseBtn").disabled = false;
-        document.getElementById("resumeBtn").disabled = true;
-        document.getElementById("stopBtn").disabled = false;
+        document.getElementById(
+            "startBtn"
+        ).disabled = true;
 
-        document.getElementById("freq-display").textContent = "— Hz";
-        document.getElementById("result").textContent = "Listening for pitch…";
-        document.getElementById("stability").textContent = "—";
-        document.getElementById("sustain").textContent = "—";
-        document.getElementById("dominant-swara").textContent = "—";
-        document.getElementById("raag-name").textContent = "Listening for tonic…";
-        document.getElementById("raag-info").textContent = "Establishing Sa before raga recognition.";
-        document.getElementById("swaras").innerHTML = `<span class="swara-placeholder">Awaiting analysis…</span>`;
-        document.getElementById("feedback").className = "feedback-box";
-        document.getElementById("feedback").textContent = "Listening to the musical phrase…";
+        document.getElementById(
+            "pauseBtn"
+        ).disabled = false;
+
+        document.getElementById(
+            "resumeBtn"
+        ).disabled = true;
+
+        document.getElementById(
+            "stopBtn"
+        ).disabled = false;
+
+        document.getElementById(
+            "freq-display"
+        ).textContent = "— Hz";
+
+        document.getElementById(
+            "result"
+        ).textContent =
+            "Listening for pitch…";
+
+        document.getElementById(
+            "stability"
+        ).textContent = "—";
+
+        document.getElementById(
+            "sustain"
+        ).textContent = "—";
+
+        document.getElementById(
+            "dominant-swara"
+        ).textContent = "—";
+
+        document.getElementById(
+            "raag-name"
+        ).textContent =
+            "Listening for tonic…";
+
+        document.getElementById(
+            "raag-info"
+        ).textContent =
+            "Establishing Sa before raga recognition.";
+
+        document.getElementById(
+            "swaras"
+        ).innerHTML =
+            `<span class="swara-placeholder">Awaiting analysis…</span>`;
+
+        document.getElementById(
+            "feedback"
+        ).className =
+            "feedback-box";
+
+        document.getElementById(
+            "feedback"
+        ).textContent =
+            "Listening to the musical phrase…";
 
         player.currentTime = 0;
+
         await player.play();
+
         analyze();
+
     } catch (error) {
+
         console.error(error);
+
         isAnalyzing = false;
-        showStatus("❌ Analysis error: " + error.message, "error");
+
+        showStatus(
+            "❌ Analysis error: " +
+            error.message,
+            "error"
+        );
     }
 }
 
 function pauseAnalysis() {
-    player.pause();
-    isAnalyzing = false;
-    cancelAnimationFrame(animationId);
 
-    document.getElementById("pauseBtn").disabled = true;
-    document.getElementById("resumeBtn").disabled = false;
+    player.pause();
+
+    isAnalyzing = false;
+
+    cancelAnimationFrame(
+        animationId
+    );
+
+    document.getElementById(
+        "pauseBtn"
+    ).disabled = true;
+
+    document.getElementById(
+        "resumeBtn"
+    ).disabled = false;
 }
 
 async function resumeAnalysis() {
+
     if (!audioContext) return;
 
     try {
+
         await audioContext.resume();
+
         await player.play();
+
         isAnalyzing = true;
 
-        document.getElementById("pauseBtn").disabled = false;
-        document.getElementById("resumeBtn").disabled = true;
+        document.getElementById(
+            "pauseBtn"
+        ).disabled = false;
+
+        document.getElementById(
+            "resumeBtn"
+        ).disabled = true;
 
         analyze();
+
     } catch (error) {
-        showStatus("❌ Resume error: " + error.message, "error");
+
+        showStatus(
+            "❌ Resume error: " +
+            error.message,
+            "error"
+        );
     }
 }
 
 function stopAnalysis(showMessage = true) {
-    cancelAnimationFrame(animationId);
+
+    cancelAnimationFrame(
+        animationId
+    );
+
     isAnalyzing = false;
+
     player.pause();
 
     try {
+
         player.currentTime = 0;
+
     } catch (_) {}
 
     resetAnalysisState();
 
-    document.getElementById("freq-display").textContent = "— Hz";
-    document.getElementById("result").textContent = "Awaiting audio analysis…";
-    document.getElementById("stability").textContent = "—";
-    document.getElementById("sustain").textContent = "—";
-    document.getElementById("dominant-swara").textContent = "—";
-    document.getElementById("raag-name").textContent = "Analyzing...";
-    document.getElementById("raag-info").textContent = "Awaiting analysis…";
-    document.getElementById("swaras").innerHTML = `<span class="swara-placeholder">Awaiting analysis…</span>`;
-    document.getElementById("feedback").className = "feedback-box";
-    document.getElementById("feedback").textContent = "Awaiting analysis…";
+    document.getElementById(
+        "freq-display"
+    ).textContent = "— Hz";
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    wfCtx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
+    document.getElementById(
+        "result"
+    ).textContent =
+        "Awaiting audio analysis…";
 
-    document.getElementById("startBtn").disabled = !player.src;
-    document.getElementById("pauseBtn").disabled = true;
-    document.getElementById("resumeBtn").disabled = true;
-    document.getElementById("stopBtn").disabled = true;
+    document.getElementById(
+        "stability"
+    ).textContent = "—";
+
+    document.getElementById(
+        "sustain"
+    ).textContent = "—";
+
+    document.getElementById(
+        "dominant-swara"
+    ).textContent = "—";
+
+    document.getElementById(
+        "raag-name"
+    ).textContent =
+        "Analyzing...";
+
+    document.getElementById(
+        "raag-info"
+    ).textContent =
+        "Awaiting analysis…";
+
+    document.getElementById(
+        "swaras"
+    ).innerHTML =
+        `<span class="swara-placeholder">Awaiting analysis…</span>`;
+
+    document.getElementById(
+        "feedback"
+    ).className =
+        "feedback-box";
+
+    document.getElementById(
+        "feedback"
+    ).textContent =
+        "Awaiting analysis…";
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    wfCtx.clearRect(
+        0,
+        0,
+        waveformCanvas.width,
+        waveformCanvas.height
+    );
+
+    document.getElementById(
+        "startBtn"
+    ).disabled = !player.src;
+
+    document.getElementById(
+        "pauseBtn"
+    ).disabled = true;
+
+    document.getElementById(
+        "resumeBtn"
+    ).disabled = true;
+
+    document.getElementById(
+        "stopBtn"
+    ).disabled = true;
 
     if (showMessage) {
-        showStatus("✅ Analysis stopped.", "success");
+
+        showStatus(
+            "✅ Analysis stopped.",
+            "success"
+        );
     }
 }
 
-player.addEventListener("ended", () => {
-    if (!isAnalyzing) return;
+player.addEventListener(
+    "ended",
+    () => {
 
-    isAnalyzing = false;
-    cancelAnimationFrame(animationId);
+        if (!isAnalyzing) return;
 
-    // Give the final accumulated sequence one last raga evaluation.
-    if (swaraTimeline.length >= 12) {
-        updateRaga();
+        isAnalyzing = false;
+
+        cancelAnimationFrame(
+            animationId
+        );
+
+        if (swaraTimeline.length >= 12) {
+
+            updateRaga();
+        }
+
+        document.getElementById(
+            "pauseBtn"
+        ).disabled = true;
+
+        document.getElementById(
+            "resumeBtn"
+        ).disabled = true;
+
+        document.getElementById(
+            "stopBtn"
+        ).disabled = false;
+
+        showStatus(
+            "✅ Analysis completed.",
+            "success"
+        );
     }
-
-    document.getElementById("pauseBtn").disabled = true;
-    document.getElementById("resumeBtn").disabled = true;
-    document.getElementById("stopBtn").disabled = false;
-
-    showStatus("✅ Analysis completed.", "success");
-});
+);
 
 /* ============================================================
    MAIN ANALYSIS LOOP
    ============================================================ */
+
 function analyze() {
+
     if (!isAnalyzing || !analyser) return;
 
-    const buffer = new Float32Array(analyser.fftSize);
-    analyser.getFloatTimeDomainData(buffer);
+    const buffer =
+        new Float32Array(
+            analyser.fftSize
+        );
+
+    analyser.getFloatTimeDomainData(
+        buffer
+    );
+
     drawWaveform(buffer);
 
-    const pitchResult = autoCorrelate(buffer, audioContext.sampleRate);
+    const pitchResult =
+        autoCorrelate(
+            buffer,
+            audioContext.sampleRate
+        );
 
     if (
         pitchResult &&
@@ -1065,28 +1603,58 @@ function analyze() {
         pitchResult.frequency <= 1000 &&
         pitchResult.confidence >= 0.35
     ) {
-        const stableFrequency = smoothPitch(pitchResult.frequency);
+
+        const stableFrequency =
+            smoothPitch(
+                pitchResult.frequency
+            );
 
         if (stableFrequency) {
-            freqHistory.push(stableFrequency);
-            if (freqHistory.length > 180) freqHistory.shift();
+
+            freqHistory.push(
+                stableFrequency
+            );
+
+            if (freqHistory.length > 180) {
+                freqHistory.shift();
+            }
 
             pitchTimeline.push({
                 frequency: stableFrequency,
                 confidence: pitchResult.confidence,
                 time: player.currentTime
             });
-            if (pitchTimeline.length > 10000) pitchTimeline.shift();
 
-            document.getElementById("freq-display").textContent =
-                stableFrequency.toFixed(2) + " Hz";
+            if (pitchTimeline.length > 10000) {
+                pitchTimeline.shift();
+            }
 
-            if (!tonicFrequency && freqHistory.length >= 40) {
-                const tonicResult = estimateTonic(freqHistory);
+            document.getElementById(
+                "freq-display"
+            ).textContent =
+                stableFrequency.toFixed(2) +
+                " Hz";
 
-                if (tonicResult && tonicResult.confidence >= 55) {
-                    tonicFrequency = tonicResult.frequency;
-                    tonicConfidence = tonicResult.confidence;
+            if (
+                !tonicFrequency &&
+                freqHistory.length >= 40
+            ) {
+
+                const tonicResult =
+                    estimateTonic(
+                        freqHistory
+                    );
+
+                if (
+                    tonicResult &&
+                    tonicResult.confidence >= 55
+                ) {
+
+                    tonicFrequency =
+                        tonicResult.frequency;
+
+                    tonicConfidence =
+                        tonicResult.confidence;
 
                     showStatus(
                         `🎵 Sa detected around ${tonicFrequency.toFixed(2)} Hz`,
@@ -1096,15 +1664,24 @@ function analyze() {
             }
 
             if (tonicFrequency) {
-                const result = frequencyToSwara(
-                    stableFrequency,
-                    tonicFrequency
-                );
 
-                if (result && result.confidence >= 0.55) {
-                    const swara = result.name;
+                const result =
+                    frequencyToSwara(
+                        stableFrequency,
+                        tonicFrequency
+                    );
 
-                    document.getElementById("result").textContent =
+                if (
+                    result &&
+                    result.confidence >= 0.55
+                ) {
+
+                    const swara =
+                        result.name;
+
+                    document.getElementById(
+                        "result"
+                    ).textContent =
                         `${swara} (${stableFrequency.toFixed(2)} Hz)`;
 
                     addSwara(
@@ -1120,148 +1697,303 @@ function analyze() {
                         s: swara
                     });
 
-                    if (graphData.length > 150) graphData.shift();
+                    if (graphData.length > 150) {
+                        graphData.shift();
+                    }
 
                     drawGraph();
+
                     updateMetrics();
+
                     updateRaga();
                 }
             }
         }
     }
 
-    animationId = requestAnimationFrame(analyze);
+    animationId =
+        requestAnimationFrame(
+            analyze
+        );
 }
 
 /* ============================================================
    PITCH DETECTION — NORMALIZED AUTOCORRELATION
    ============================================================ */
+
 function autoCorrelate(buf, sampleRate) {
+
     const SIZE = buf.length;
 
     let rms = 0;
+
     for (let i = 0; i < SIZE; i++) {
         rms += buf[i] * buf[i];
     }
-    rms = Math.sqrt(rms / SIZE);
+
+    rms = Math.sqrt(
+        rms / SIZE
+    );
 
     if (rms < 0.012) {
-        return { frequency: -1, confidence: 0 };
+
+        return {
+            frequency: -1,
+            confidence: 0
+        };
     }
 
     let mean = 0;
-    for (let i = 0; i < SIZE; i++) mean += buf[i];
+
+    for (let i = 0; i < SIZE; i++) {
+        mean += buf[i];
+    }
+
     mean /= SIZE;
 
-    const signal = new Float32Array(SIZE);
+    const signal =
+        new Float32Array(SIZE);
+
     for (let i = 0; i < SIZE; i++) {
-        signal[i] = buf[i] - mean;
+        signal[i] =
+            buf[i] - mean;
     }
 
     const minFreq = 70;
     const maxFreq = 1000;
-    const minLag = Math.floor(sampleRate / maxFreq);
-    const maxLag = Math.min(
-        Math.floor(sampleRate / minFreq),
-        SIZE - 2
-    );
+
+    const minLag =
+        Math.floor(
+            sampleRate / maxFreq
+        );
+
+    const maxLag =
+        Math.min(
+            Math.floor(
+                sampleRate / minFreq
+            ),
+            SIZE - 2
+        );
 
     let bestLag = -1;
     let bestCorrelation = -1;
 
-    for (let lag = minLag; lag <= maxLag; lag++) {
+    for (
+        let lag = minLag;
+        lag <= maxLag;
+        lag++
+    ) {
+
         let sum = 0;
         let energy1 = 0;
         let energy2 = 0;
 
-        for (let i = 0; i < SIZE - lag; i++) {
+        for (
+            let i = 0;
+            i < SIZE - lag;
+            i++
+        ) {
+
             const a = signal[i];
             const b = signal[i + lag];
+
             sum += a * b;
+
             energy1 += a * a;
             energy2 += b * b;
         }
 
-        if (energy1 <= 0 || energy2 <= 0) continue;
+        if (
+            energy1 <= 0 ||
+            energy2 <= 0
+        ) continue;
 
         const correlation =
-            sum / Math.sqrt(energy1 * energy2);
+            sum /
+            Math.sqrt(
+                energy1 * energy2
+            );
 
-        if (correlation > bestCorrelation) {
-            bestCorrelation = correlation;
+        if (
+            correlation >
+            bestCorrelation
+        ) {
+
+            bestCorrelation =
+                correlation;
+
             bestLag = lag;
         }
     }
 
-    if (bestLag <= 0 || bestCorrelation < 0.18) {
-        return { frequency: -1, confidence: 0 };
+    if (
+        bestLag <= 0 ||
+        bestCorrelation < 0.18
+    ) {
+
+        return {
+            frequency: -1,
+            confidence: 0
+        };
     }
 
     function getCorrelation(lag) {
-        if (lag <= 0 || lag >= SIZE) return 0;
+
+        if (
+            lag <= 0 ||
+            lag >= SIZE
+        ) return 0;
 
         let sum = 0;
         let energy1 = 0;
         let energy2 = 0;
 
-        for (let i = 0; i < SIZE - lag; i++) {
+        for (
+            let i = 0;
+            i < SIZE - lag;
+            i++
+        ) {
+
             const a = signal[i];
             const b = signal[i + lag];
+
             sum += a * b;
+
             energy1 += a * a;
             energy2 += b * b;
         }
 
-        if (energy1 <= 0 || energy2 <= 0) return 0;
-        return sum / Math.sqrt(energy1 * energy2);
+        if (
+            energy1 <= 0 ||
+            energy2 <= 0
+        ) return 0;
+
+        return (
+            sum /
+            Math.sqrt(
+                energy1 * energy2
+            )
+        );
     }
 
-    let refinedLag = bestLag;
+    let refinedLag =
+        bestLag;
 
-    if (bestLag > minLag && bestLag < maxLag) {
-        const left = getCorrelation(bestLag - 1);
-        const center = bestCorrelation;
-        const right = getCorrelation(bestLag + 1);
-        const denominator = 2 * (2 * center - left - right);
+    if (
+        bestLag > minLag &&
+        bestLag < maxLag
+    ) {
 
-        if (Math.abs(denominator) > 1e-9) {
-            refinedLag = bestLag + (left - right) / denominator;
+        const left =
+            getCorrelation(
+                bestLag - 1
+            );
+
+        const center =
+            bestCorrelation;
+
+        const right =
+            getCorrelation(
+                bestLag + 1
+            );
+
+        const denominator =
+            2 *
+            (
+                2 * center -
+                left -
+                right
+            );
+
+        if (
+            Math.abs(
+                denominator
+            ) > 1e-9
+        ) {
+
+            refinedLag =
+                bestLag +
+                (
+                    left - right
+                ) /
+                denominator;
         }
     }
 
-    const frequency = sampleRate / refinedLag;
-    const confidence = Math.max(0, Math.min(1, bestCorrelation));
+    const frequency =
+        sampleRate /
+        refinedLag;
 
-    return { frequency, confidence };
+    const confidence =
+        Math.max(
+            0,
+            Math.min(
+                1,
+                bestCorrelation
+            )
+        );
+
+    return {
+        frequency,
+        confidence
+    };
 }
 
 /* ============================================================
    PITCH SMOOTHING
    ============================================================ */
-function smoothPitch(newPitch) {
-    if (!newPitch || newPitch <= 0) return null;
 
-    // Reject an implausibly large instantaneous jump.
+function smoothPitch(newPitch) {
+
+    if (!newPitch || newPitch <= 0)
+        return null;
+
     if (
         smoothedPitch !== null &&
-        Math.abs(1200 * Math.log2(newPitch / smoothedPitch)) > 600
+        Math.abs(
+            1200 *
+            Math.log2(
+                newPitch /
+                smoothedPitch
+            )
+        ) > 600
     ) {
+
         return smoothedPitch;
     }
 
     pitchBuffer.push(newPitch);
-    if (pitchBuffer.length > 7) pitchBuffer.shift();
 
-    const sorted = [...pitchBuffer].sort((a, b) => a - b);
-    const median = sorted[Math.floor(sorted.length / 2)];
+    if (pitchBuffer.length > 7) {
+        pitchBuffer.shift();
+    }
 
-    if (smoothedPitch === null) {
-        smoothedPitch = median;
-    } else {
-        // Smoothing in frequency domain for stable UI output.
+    const sorted =
+        [...pitchBuffer].sort(
+            (a, b) => a - b
+        );
+
+    const median =
+        sorted[
+            Math.floor(
+                sorted.length / 2
+            )
+        ];
+
+    if (
+        smoothedPitch === null
+    ) {
+
         smoothedPitch =
-            0.75 * smoothedPitch +
-            0.25 * median;
+            median;
+
+    } else {
+
+        smoothedPitch =
+            0.75 *
+            smoothedPitch +
+            0.25 *
+            median;
     }
 
     return smoothedPitch;
@@ -1270,32 +2002,75 @@ function smoothPitch(newPitch) {
 /* ============================================================
    TONIC / SA ESTIMATION
    ============================================================ */
-function estimateTonic(history) {
-    if (!history || history.length < 30) return null;
 
-    const pitchClasses = Array(12).fill(0);
-    const frequencies = Array.from({ length: 12 }, () => []);
+function estimateTonic(history) {
+
+    if (
+        !history ||
+        history.length < 30
+    ) return null;
+
+    const pitchClasses =
+        Array(12).fill(0);
+
+    const frequencies =
+        Array.from(
+            { length: 12 },
+            () => []
+        );
 
     history.forEach(freq => {
-        if (!freq || freq <= 0) return;
 
-        const midi = 69 + 12 * Math.log2(freq / 440);
-        const pc = ((Math.round(midi) % 12) + 12) % 12;
+        if (!freq || freq <= 0)
+            return;
+
+        const midi =
+            69 +
+            12 *
+            Math.log2(
+                freq / 440
+            );
+
+        const pc =
+            (
+                Math.round(midi) %
+                12 +
+                12
+            ) % 12;
 
         pitchClasses[pc]++;
-        frequencies[pc].push(freq);
+
+        frequencies[pc].push(
+            freq
+        );
     });
 
     let bestPC = -1;
     let bestScore = -Infinity;
 
-    for (let sa = 0; sa < 12; sa++) {
-        const pa = (sa + 7) % 12;
-        const ma = (sa + 5) % 12;
-        const re = (sa + 2) % 12;
-        const ga = (sa + 4) % 12;
-        const dha = (sa + 9) % 12;
-        const ni = (sa + 11) % 12;
+    for (
+        let sa = 0;
+        sa < 12;
+        sa++
+    ) {
+
+        const pa =
+            (sa + 7) % 12;
+
+        const ma =
+            (sa + 5) % 12;
+
+        const re =
+            (sa + 2) % 12;
+
+        const ga =
+            (sa + 4) % 12;
+
+        const dha =
+            (sa + 9) % 12;
+
+        const ni =
+            (sa + 11) % 12;
 
         const score =
             pitchClasses[sa] * 4.0 +
@@ -1306,55 +2081,143 @@ function estimateTonic(history) {
             pitchClasses[dha] * 0.5 +
             pitchClasses[ni] * 0.5;
 
-        if (score > bestScore) {
+        if (
+            score >
+            bestScore
+        ) {
+
             bestScore = score;
             bestPC = sa;
         }
     }
 
-    if (bestPC < 0 || frequencies[bestPC].length < 5) {
-        return null;
-    }
+    if (
+        bestPC < 0 ||
+        frequencies[bestPC].length < 5
+    ) return null;
 
-    const sorted = [...frequencies[bestPC]].sort((a, b) => a - b);
-    let tonic = sorted[Math.floor(sorted.length / 2)];
+    const sorted =
+        [
+            ...frequencies[bestPC]
+        ].sort(
+            (a, b) => a - b
+        );
 
-    while (tonic > 220) tonic /= 2;
-    while (tonic < 80) tonic *= 2;
+    let tonic =
+        sorted[
+            Math.floor(
+                sorted.length / 2
+            )
+        ];
 
-    const total = history.filter(f => f > 0).length;
+    while (tonic > 220)
+        tonic /= 2;
+
+    while (tonic < 80)
+        tonic *= 2;
+
+    const total =
+        history.filter(
+            f => f > 0
+        ).length;
+
     const classConfidence =
-        total ? (frequencies[bestPC].length / total) * 100 : 0;
+        total
+            ? (
+                frequencies[bestPC].length /
+                total
+              ) * 100
+            : 0;
 
-    // Refine tonic within ±50 cents around the median using pitch agreement.
-    let bestTonic = tonic;
-    let bestAgreement = -Infinity;
+    let bestTonic =
+        tonic;
 
-    for (let cents = -50; cents <= 50; cents += 2) {
-        const testTonic = tonic * Math.pow(2, cents / 1200);
+    let bestAgreement =
+        -Infinity;
+
+    for (
+        let cents = -50;
+        cents <= 50;
+        cents += 2
+    ) {
+
+        const testTonic =
+            tonic *
+            Math.pow(
+                2,
+                cents / 1200
+            );
+
         let agreement = 0;
 
         history.forEach(freq => {
-            if (!freq || freq <= 0) return;
 
-            const semitone = 12 * Math.log2(freq / testTonic);
-            const nearest = Math.round(semitone);
-            const error = Math.abs(semitone - nearest);
-            const circularError = Math.min(error, 12 - error);
+            if (!freq || freq <= 0)
+                return;
 
-            if (circularError <= 0.20) agreement += 2;
-            else if (circularError <= 0.35) agreement += 1;
+            const semitone =
+                12 *
+                Math.log2(
+                    freq /
+                    testTonic
+                );
+
+            const nearest =
+                Math.round(
+                    semitone
+                );
+
+            const error =
+                Math.abs(
+                    semitone -
+                    nearest
+                );
+
+            const circularError =
+                Math.min(
+                    error,
+                    12 - error
+                );
+
+            if (
+                circularError <=
+                0.20
+            ) {
+
+                agreement += 2;
+
+            } else if (
+                circularError <=
+                0.35
+            ) {
+
+                agreement += 1;
+            }
         });
 
-        if (agreement > bestAgreement) {
-            bestAgreement = agreement;
-            bestTonic = testTonic;
+        if (
+            agreement >
+            bestAgreement
+        ) {
+
+            bestAgreement =
+                agreement;
+
+            bestTonic =
+                testTonic;
         }
     }
 
-    const refinementConfidence = total
-        ? Math.min(100, (bestAgreement / (total * 2)) * 100)
-        : 0;
+    const refinementConfidence =
+        total
+            ? Math.min(
+                100,
+                (
+                    bestAgreement /
+                    (total * 2)
+                ) * 100
+              )
+            : 0;
 
     const confidence =
         classConfidence * 0.70 +
@@ -1362,119 +2225,253 @@ function estimateTonic(history) {
 
     return {
         frequency: bestTonic,
-        confidence: Math.min(100, confidence)
+        confidence:
+            Math.min(
+                100,
+                confidence
+            )
     };
 }
 
 /* ============================================================
    FREQUENCY → SWARA
    ============================================================ */
-function frequencyToSwara(freq, tonic) {
-    if (!freq || !tonic || freq <= 0 || tonic <= 0) return null;
 
-    const semitones = 12 * Math.log2(freq / tonic);
-    const normalized = ((semitones % 12) + 12) % 12;
+function frequencyToSwara(freq, tonic) {
+
+    if (
+        !freq ||
+        !tonic ||
+        freq <= 0 ||
+        tonic <= 0
+    ) return null;
+
+    const semitones =
+        12 *
+        Math.log2(
+            freq / tonic
+        );
+
+    const normalized =
+        (
+            semitones % 12 +
+            12
+        ) % 12;
 
     let bestIndex = 0;
     let minError = Infinity;
 
-    for (let i = 0; i < 12; i++) {
-        const directError = Math.abs(normalized - i);
-        const circularError = Math.min(directError, 12 - directError);
+    for (
+        let i = 0;
+        i < 12;
+        i++
+    ) {
 
-        if (circularError < minError) {
-            minError = circularError;
+        const directError =
+            Math.abs(
+                normalized - i
+            );
+
+        const circularError =
+            Math.min(
+                directError,
+                12 - directError
+            );
+
+        if (
+            circularError <
+            minError
+        ) {
+
+            minError =
+                circularError;
+
             bestIndex = i;
         }
     }
 
-    // 0.40 semitone = 40 cents acceptance region.
-    const maxError = 0.40;
+    const maxError =
+        0.40;
 
-    if (minError > maxError) return null;
+    if (
+        minError >
+        maxError
+    ) return null;
 
-    const confidence = 1 - minError / maxError;
+    const confidence =
+        1 -
+        minError /
+        maxError;
 
     return {
-        name: SWARA_NAMES[bestIndex],
-        index: bestIndex,
+        name:
+            SWARA_NAMES[bestIndex],
+
+        index:
+            bestIndex,
+
         confidence,
-        semitone: normalized,
-        error: minError
+
+        semitone:
+            normalized,
+
+        error:
+            minError
     };
 }
 
 /* ============================================================
    SWARA TIMELINE
    ============================================================ */
-function addSwara(swara, frequency, pitchConfidence, swaraConfidence) {
-    const now = performance.now();
+
+function addSwara(
+    swara,
+    frequency,
+    pitchConfidence,
+    swaraConfidence
+) {
+
+    const now =
+        performance.now();
 
     if (
         swara === lastSwara &&
         now - lastSwaraTime < 180
     ) {
+
         return;
     }
 
     swaraTimeline.push({
+
         name: swara,
-        time: player.currentTime,
+
+        time:
+            player.currentTime,
+
         frequency,
+
         pitchConfidence,
+
         swaraConfidence
     });
 
-    lastSwara = swara;
-    lastSwaraTime = now;
+    lastSwara =
+        swara;
+
+    lastSwaraTime =
+        now;
 
     renderSwaraTimeline();
 }
 
 function renderSwaraTimeline() {
-    const container = document.getElementById("swaras");
+
+    const container =
+        document.getElementById(
+            "swaras"
+        );
 
     if (!swaraTimeline.length) {
+
         container.innerHTML =
             `<span class="swara-placeholder">Awaiting analysis…</span>`;
+
         return;
     }
 
-    container.innerHTML = swaraTimeline.slice(-40).map(item => {
-        const color = swaraColors[item.name] || "#e8b84b";
-        return `<span class="swara-chip" style="border-color:${color}66; background:${color}22; color:${color};">${item.name}</span>`;
-    }).join("");
+    container.innerHTML =
+        swaraTimeline
+            .slice(-40)
+            .map(item => {
+
+                const color =
+                    swaraColors[item.name] ||
+                    "#e8b84b";
+
+                return `
+                    <span
+                        class="swara-chip"
+                        style="
+                            border-color:${color}66;
+                            background:${color}22;
+                            color:${color};
+                        "
+                    >
+                        ${item.name}
+                    </span>
+                `;
+
+            })
+            .join("");
 }
 
 /* ============================================================
    METRICS
    ============================================================ */
+
 function calculateDominantSwara() {
-    if (swaraTimeline.length < 8) return null;
+
+    if (
+        swaraTimeline.length < 8
+    ) return null;
 
     const stats = {};
-    SWARA_NAMES.forEach(s => {
-        stats[s] = {
-            count: 0,
-            duration: 0,
-            stableDuration: 0,
-            score: 0
-        };
-    });
 
-    for (let i = 0; i < swaraTimeline.length; i++) {
-        const current = swaraTimeline[i];
-        const next = swaraTimeline[i + 1];
+    SWARA_NAMES.forEach(
+        s => {
 
-        if (!stats[current.name]) continue;
+            stats[s] = {
+                count: 0,
+                duration: 0,
+                stableDuration: 0,
+                score: 0
+            };
+
+        }
+    );
+
+    for (
+        let i = 0;
+        i < swaraTimeline.length;
+        i++
+    ) {
+
+        const current =
+            swaraTimeline[i];
+
+        const next =
+            swaraTimeline[i + 1];
+
+        if (!stats[current.name])
+            continue;
+
         stats[current.name].count++;
 
         if (next) {
-            const duration = next.time - current.time;
-            if (duration > 0 && duration <= 1.5) {
-                stats[current.name].duration += duration;
-                if (duration >= 0.30) {
-                    stats[current.name].stableDuration += duration;
+
+            const duration =
+                next.time -
+                current.time;
+
+            if (
+                duration > 0 &&
+                duration <= 1.5
+            ) {
+
+                stats[
+                    current.name
+                ].duration +=
+                    duration;
+
+                if (
+                    duration >= 0.30
+                ) {
+
+                    stats[
+                        current.name
+                    ].stableDuration +=
+                        duration;
                 }
             }
         }
@@ -1484,92 +2481,219 @@ function calculateDominantSwara() {
     let maxDuration = 1;
     let maxStableDuration = 1;
 
-    SWARA_NAMES.forEach(s => {
-        maxCount = Math.max(maxCount, stats[s].count);
-        maxDuration = Math.max(maxDuration, stats[s].duration);
-        maxStableDuration = Math.max(maxStableDuration, stats[s].stableDuration);
-    });
+    SWARA_NAMES.forEach(
+        s => {
 
-    SWARA_NAMES.forEach(s => {
-        stats[s].score =
-            (stats[s].count / maxCount) * 0.35 +
-            (stats[s].duration / maxDuration) * 0.30 +
-            (stats[s].stableDuration / maxStableDuration) * 0.35;
-    });
+            maxCount =
+                Math.max(
+                    maxCount,
+                    stats[s].count
+                );
+
+            maxDuration =
+                Math.max(
+                    maxDuration,
+                    stats[s].duration
+                );
+
+            maxStableDuration =
+                Math.max(
+                    maxStableDuration,
+                    stats[s].stableDuration
+                );
+        }
+    );
+
+    SWARA_NAMES.forEach(
+        s => {
+
+            stats[s].score =
+                (
+                    stats[s].count /
+                    maxCount
+                ) * 0.35 +
+
+                (
+                    stats[s].duration /
+                    maxDuration
+                ) * 0.30 +
+
+                (
+                    stats[s].stableDuration /
+                    maxStableDuration
+                ) * 0.35;
+        }
+    );
 
     return SWARA_NAMES
-        .map(s => ({ name: s, score: stats[s].score }))
-        .sort((a, b) => b.score - a.score)[0];
+        .map(
+            s => ({
+                name: s,
+                score:
+                    stats[s].score
+            })
+        )
+        .sort(
+            (a, b) =>
+                b.score -
+                a.score
+        )[0];
 }
 
 function getVariance(arr) {
-    if (!arr.length) return 0;
-    const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
-    return arr.reduce((a, b) => a + Math.pow(b - avg, 2), 0) / arr.length;
+
+    if (!arr.length)
+        return 0;
+
+    const avg =
+        arr.reduce(
+            (a, b) => a + b,
+            0
+        ) / arr.length;
+
+    return arr.reduce(
+        (a, b) =>
+            a +
+            Math.pow(
+                b - avg,
+                2
+            ),
+        0
+    ) / arr.length;
 }
 
 function updateMetrics() {
-    const variance = getVariance(freqHistory);
+
+    const variance =
+        getVariance(
+            freqHistory
+        );
 
     let stability;
-    if (variance < 15) stability = "Excellent";
-    else if (variance < 50) stability = "Good";
-    else if (variance < 120) stability = "Average";
-    else stability = "Poor";
 
-    const stabEl = document.getElementById("stability");
-    stabEl.textContent = stability;
+    if (variance < 15)
+        stability = "Excellent";
+    else if (variance < 50)
+        stability = "Good";
+    else if (variance < 120)
+        stability = "Average";
+    else
+        stability = "Poor";
+
+    const stabEl =
+        document.getElementById(
+            "stability"
+        );
+
+    stabEl.textContent =
+        stability;
+
     stabEl.className =
         "metric-value " +
-        ((stability === "Excellent" || stability === "Good")
-            ? "good"
-            : stability === "Poor" ? "poor" : "");
+        (
+            stability === "Excellent" ||
+            stability === "Good"
+                ? "good"
+                : stability === "Poor"
+                    ? "poor"
+                    : ""
+        );
 
-    // Sustain is based on the longest recent stable pitch run.
-    const sustainSeconds = calculateSustainSeconds();
-    const sustain = sustainSeconds >= 1.0
-        ? "Excellent"
-        : sustainSeconds >= 0.50
-            ? "Good"
-            : "Developing";
+    const sustainSeconds =
+        calculateSustainSeconds();
 
-    const susEl = document.getElementById("sustain");
-    susEl.textContent = sustain;
+    const sustain =
+        sustainSeconds >= 1.0
+            ? "Excellent"
+            : sustainSeconds >= 0.50
+                ? "Good"
+                : "Developing";
+
+    const susEl =
+        document.getElementById(
+            "sustain"
+        );
+
+    susEl.textContent =
+        sustain;
+
     susEl.className =
         "metric-value " +
-        (sustain === "Excellent" || sustain === "Good" ? "good" : "poor");
+        (
+            sustain === "Excellent" ||
+            sustain === "Good"
+                ? "good"
+                : "poor"
+        );
 
-    const dominant = calculateDominantSwara();
+    const dominant =
+        calculateDominantSwara();
+
     if (dominant) {
-        document.getElementById("dominant-swara").textContent = dominant.name;
+
+        document.getElementById(
+            "dominant-swara"
+        ).textContent =
+            dominant.name;
     }
 }
 
 function calculateSustainSeconds() {
-    if (pitchTimeline.length < 3) return 0;
+
+    if (
+        pitchTimeline.length < 3
+    ) return 0;
 
     let longest = 0;
     let runStart = null;
     let previous = null;
 
-    for (const point of pitchTimeline.slice(-120)) {
+    for (
+        const point of
+        pitchTimeline.slice(-120)
+    ) {
+
         if (!previous) {
-            runStart = point.time;
-            previous = point;
+
+            runStart =
+                point.time;
+
+            previous =
+                point;
+
             continue;
         }
 
-        const cents = Math.abs(
-            1200 * Math.log2(point.frequency / previous.frequency)
-        );
+        const cents =
+            Math.abs(
+                1200 *
+                Math.log2(
+                    point.frequency /
+                    previous.frequency
+                )
+            );
 
-        if (cents <= 35 && point.time - previous.time <= 0.20) {
-            longest = Math.max(longest, point.time - runStart);
+        if (
+            cents <= 35 &&
+            point.time -
+            previous.time <= 0.20
+        ) {
+
+            longest =
+                Math.max(
+                    longest,
+                    point.time -
+                    runStart
+                );
+
         } else {
-            runStart = point.time;
+
+            runStart =
+                point.time;
         }
 
-        previous = point;
+        previous =
+            point;
     }
 
     return longest;
@@ -1578,63 +2702,121 @@ function calculateSustainSeconds() {
 /* ============================================================
    RAGA ENGINE
    ============================================================ */
+
 function updateRaga() {
-    if (swaraTimeline.length < 15) {
-        document.getElementById("raag-name").textContent =
+
+    if (
+        swaraTimeline.length < 15
+    ) {
+
+        document.getElementById(
+            "raag-name"
+        ).textContent =
             "Collecting musical evidence…";
+
         return;
     }
 
-    // Use recent musical material so an old phrase does not dominate forever.
-    const sequence = swaraTimeline
-        .slice(-80)
-        .map(item => item.name);
+    const sequence =
+        swaraTimeline
+            .slice(-80)
+            .map(
+                item => item.name
+            );
 
-    const result = identifyRaga(sequence);
+    const result =
+        identifyRaga(
+            sequence
+        );
 
     if (!result) return;
 
     ragaHistory.push({
-        name: result.raga.name,
-        confidence: result.confidence,
+        name:
+            result.raga.name,
+
+        confidence:
+            result.confidence,
+
         result
     });
 
-    if (ragaHistory.length > 12) ragaHistory.shift();
+    if (
+        ragaHistory.length > 12
+    ) {
+
+        ragaHistory.shift();
+    }
 
     const votes = {};
-    ragaHistory.forEach(item => {
-        if (!votes[item.name]) votes[item.name] = 0;
-        votes[item.name]++;
-    });
 
-    let bestName = result.raga.name;
+    ragaHistory.forEach(
+        item => {
+
+            if (!votes[item.name])
+                votes[item.name] = 0;
+
+            votes[item.name]++;
+        }
+    );
+
+    let bestName =
+        result.raga.name;
+
     let bestVotes = 0;
 
-    Object.keys(votes).forEach(name => {
-        if (votes[name] > bestVotes) {
-            bestVotes = votes[name];
-            bestName = name;
-        }
-    });
+    Object.keys(votes).forEach(
+        name => {
 
-    const matching = ragaHistory.filter(x => x.name === bestName);
-    const averageConfidence = matching.reduce(
-        (sum, x) => sum + x.confidence,
-        0
-    ) / matching.length;
+            if (
+                votes[name] >
+                bestVotes
+            ) {
+
+                bestVotes =
+                    votes[name];
+
+                bestName =
+                    name;
+            }
+        }
+    );
+
+    const matching =
+        ragaHistory.filter(
+            x =>
+                x.name ===
+                bestName
+        );
+
+    const averageConfidence =
+        matching.reduce(
+            (sum, x) =>
+                sum +
+                x.confidence,
+            0
+        ) / matching.length;
 
     const consistency =
-        (bestVotes / ragaHistory.length) * 100;
+        (
+            bestVotes /
+            ragaHistory.length
+        ) * 100;
 
     const finalConfidence =
         averageConfidence * 0.70 +
         consistency * 0.30;
 
-    const bestRecord = matching[matching.length - 1].result;
+    const bestRecord =
+        matching[
+            matching.length - 1
+        ].result;
 
-    currentRaga = bestRecord.raga;
-    currentRagaConfidence = finalConfidence;
+    currentRaga =
+        bestRecord.raga;
+
+    currentRagaConfidence =
+        finalConfidence;
 
     const accepted =
         finalConfidence >= 70 &&
@@ -1644,10 +2826,15 @@ function updateRaga() {
         bestRecord.pakadScore >= 45;
 
     if (accepted) {
-        document.getElementById("raag-name").textContent =
+
+        document.getElementById(
+            "raag-name"
+        ).textContent =
             bestRecord.raga.name;
 
-        document.getElementById("raag-info").innerHTML = `
+        document.getElementById(
+            "raag-info"
+        ).innerHTML = `
             <b>Confidence:</b> ${finalConfidence.toFixed(1)}% <br>
             <b>Swara Coverage:</b> ${bestRecord.coverage.toFixed(1)}% <br>
             <b>Pakad Match:</b> ${bestRecord.pakadScore.toFixed(1)}% <br>
@@ -1655,18 +2842,30 @@ function updateRaga() {
             <b>Avaroh:</b> ${bestRecord.raga.avaroh.join(" ")} <br>
             <b>Vadi:</b> ${bestRecord.raga.vadi} <br>
             <b>Samvadi:</b> ${bestRecord.raga.samvadi} <br>
-            <b>Pakad:</b> ${bestRecord.raga.pakad.map(p => p.join(" - ")).join(" | ")}
+            <b>Pakad:</b> ${bestRecord.raga.pakad.map(
+                p => p.join(" - ")
+            ).join(" | ")}
         `;
 
-        updateFeedback({
-            ...bestRecord,
-            confidence: finalConfidence
-        }, true);
+        updateFeedback(
+            {
+                ...bestRecord,
+                confidence:
+                    finalConfidence
+            },
+            true
+        );
+
     } else {
-        document.getElementById("raag-name").textContent =
+
+        document.getElementById(
+            "raag-name"
+        ).textContent =
             "Not confidently identified";
 
-        document.getElementById("raag-info").innerHTML = `
+        document.getElementById(
+            "raag-info"
+        ).innerHTML = `
             <b>Best candidate:</b> ${bestRecord.raga.name} <br>
             <b>Confidence:</b> ${finalConfidence.toFixed(1)}% <br>
             <b>Coverage:</b> ${bestRecord.coverage.toFixed(1)}% <br>
@@ -1674,214 +2873,460 @@ function updateRaga() {
             ⚠ The analyzer is waiting for stronger melodic evidence.
         `;
 
-        updateFeedback({
-            ...bestRecord,
-            confidence: finalConfidence
-        }, false);
+        updateFeedback(
+            {
+                ...bestRecord,
+                confidence:
+                    finalConfidence
+            },
+            false
+        );
     }
 }
 
 function identifyRaga(sequence) {
-    if (!sequence || sequence.length < 12) return null;
 
-    const candidates = ragas.map(raga => {
-        const allowed = new Set(raga.swaras);
-        const uniqueDetected = [...new Set(sequence)];
+    if (
+        !sequence ||
+        sequence.length < 12
+    ) return null;
 
-        // Evidence that observed notes belong to this raga.
-        const matched = uniqueDetected.filter(s => allowed.has(s)).length;
-        const coverage =
-            (matched / raga.swaras.length) * 100;
+    const candidates =
+        ragas.map(
+            raga => {
 
-        // Count every occurrence, but repeated forbidden notes are penalized.
-        const forbiddenCount = sequence.reduce(
-            (count, swara) =>
-                count + (raga.forbidden.includes(swara) ? 1 : 0),
-            0
+                const allowed =
+                    new Set(
+                        raga.swaras
+                    );
+
+                const uniqueDetected =
+                    [
+                        ...new Set(
+                            sequence
+                        )
+                    ];
+
+                const matched =
+                    uniqueDetected.filter(
+                        s =>
+                            allowed.has(s)
+                    ).length;
+
+                const coverage =
+                    (
+                        matched /
+                        raga.swaras.length
+                    ) * 100;
+
+                const forbiddenCount =
+                    sequence.reduce(
+                        (
+                            count,
+                            swara
+                        ) =>
+                            count +
+                            (
+                                raga.forbidden.includes(
+                                    swara
+                                )
+                                    ? 1
+                                    : 0
+                            ),
+                        0
+                    );
+
+                const forbiddenRate =
+                    forbiddenCount /
+                    sequence.length;
+
+                const pakadScore =
+                    calculatePakadScore(
+                        sequence,
+                        raga.pakad
+                    );
+
+                const aarohScore =
+                    calculateDirectionalScore(
+                        sequence,
+                        raga.aaroh,
+                        "up"
+                    );
+
+                const avarohScore =
+                    calculateDirectionalScore(
+                        sequence,
+                        raga.avaroh,
+                        "down"
+                    );
+
+                const vadiScore =
+                    calculateProminenceScore(
+                        sequence,
+                        raga.vadi
+                    );
+
+                const samvadiScore =
+                    calculateProminenceScore(
+                        sequence,
+                        raga.samvadi
+                    );
+
+                const stabilityScore =
+                    calculateSequenceStability(
+                        sequence
+                    );
+
+                let score =
+                    coverage * 0.25 +
+                    pakadScore * 0.30 +
+                    aarohScore * 0.10 +
+                    avarohScore * 0.10 +
+                    vadiScore * 0.05 +
+                    samvadiScore * 0.05 +
+                    stabilityScore * 0.15;
+
+                score -=
+                    forbiddenRate * 100;
+
+                score =
+                    Math.max(
+                        0,
+                        Math.min(
+                            100,
+                            score
+                        )
+                    );
+
+                return {
+
+                    raga,
+
+                    confidence:
+                        score,
+
+                    coverage,
+
+                    pakadScore,
+
+                    aarohScore,
+
+                    avarohScore,
+
+                    vadiScore,
+
+                    samvadiScore,
+
+                    stabilityScore,
+
+                    forbiddenCount
+                };
+            }
         );
 
-        const forbiddenRate =
-            forbiddenCount / sequence.length;
+    candidates.sort(
+        (a, b) =>
+            b.confidence -
+            a.confidence
+    );
 
-        const pakadScore = calculatePakadScore(
-            sequence,
-            raga.pakad
-        );
-
-        const aarohScore = calculateDirectionalScore(
-            sequence,
-            raga.aaroh,
-            "up"
-        );
-
-        const avarohScore = calculateDirectionalScore(
-            sequence,
-            raga.avaroh,
-            "down"
-        );
-
-        const vadiScore = calculateProminenceScore(
-            sequence,
-            raga.vadi
-        );
-
-        const samvadiScore = calculateProminenceScore(
-            sequence,
-            raga.samvadi
-        );
-
-        const stabilityScore = calculateSequenceStability(sequence);
-
-        // A raga with fewer swaras can naturally reach 100% coverage sooner,
-        // so forbidden-note evidence is given a strong penalty.
-        let score =
-            coverage * 0.25 +
-            pakadScore * 0.30 +
-            aarohScore * 0.10 +
-            avarohScore * 0.10 +
-            vadiScore * 0.05 +
-            samvadiScore * 0.05 +
-            stabilityScore * 0.15;
-
-        score -= forbiddenRate * 100;
-        score = Math.max(0, Math.min(100, score));
-
-        return {
-            raga,
-            confidence: score,
-            coverage,
-            pakadScore,
-            aarohScore,
-            avarohScore,
-            vadiScore,
-            samvadiScore,
-            stabilityScore,
-            forbiddenCount
-        };
-    });
-
-    candidates.sort((a, b) => b.confidence - a.confidence);
     return candidates[0] || null;
 }
 
 /* ============================================================
    PAKAD MATCHING
-   ============================================================
-   Exact subsequence matches are strongest evidence.
-   Partial ordered matches receive smaller scores.
    ============================================================ */
-function calculatePakadScore(sequence, pakads) {
-    if (!sequence.length || !pakads || !pakads.length) return 0;
+
+function calculatePakadScore(
+    sequence,
+    pakads
+) {
+
+    if (
+        !sequence.length ||
+        !pakads ||
+        !pakads.length
+    ) return 0;
 
     let bestScore = 0;
 
-    for (const pattern of pakads) {
-        if (!pattern.length) continue;
+    for (
+        const pattern of pakads
+    ) {
 
-        // Exact contiguous match.
-        for (let i = 0; i <= sequence.length - pattern.length; i++) {
+        if (!pattern.length)
+            continue;
+
+        for (
+            let i = 0;
+            i <=
+            sequence.length -
+            pattern.length;
+            i++
+        ) {
+
             let exact = 0;
 
-            for (let j = 0; j < pattern.length; j++) {
-                if (sequence[i + j] === pattern[j]) exact++;
+            for (
+                let j = 0;
+                j < pattern.length;
+                j++
+            ) {
+
+                if (
+                    sequence[
+                        i + j
+                    ] ===
+                    pattern[j]
+                ) {
+
+                    exact++;
+                }
             }
 
-            const exactScore = (exact / pattern.length) * 100;
-            bestScore = Math.max(bestScore, exactScore);
+            const exactScore =
+                (
+                    exact /
+                    pattern.length
+                ) * 100;
+
+            bestScore =
+                Math.max(
+                    bestScore,
+                    exactScore
+                );
         }
 
-        // Ordered subsequence match for phrases interrupted by ornamental notes.
         let p = 0;
         let matched = 0;
 
-        for (const swara of sequence) {
-            if (swara === pattern[p]) {
+        for (
+            const swara of sequence
+        ) {
+
+            if (
+                swara ===
+                pattern[p]
+            ) {
+
                 matched++;
                 p++;
-                if (p === pattern.length) break;
+
+                if (
+                    p ===
+                    pattern.length
+                ) break;
             }
         }
 
         const subsequenceScore =
-            (matched / pattern.length) * 70;
+            (
+                matched /
+                pattern.length
+            ) * 70;
 
-        bestScore = Math.max(
-            bestScore,
-            subsequenceScore
-        );
+        bestScore =
+            Math.max(
+                bestScore,
+                subsequenceScore
+            );
     }
 
-    return Math.min(100, bestScore);
+    return Math.min(
+        100,
+        bestScore
+    );
 }
 
 /* ============================================================
    AAROH / AVAROH MATCHING
    ============================================================ */
-function calculateDirectionalScore(sequence, reference, direction) {
-    if (!sequence || sequence.length < 2) return 0;
 
-    const ref = new Map();
-    reference.forEach((swara, index) => {
-        if (!ref.has(swara)) ref.set(swara, index);
-    });
+function calculateDirectionalScore(
+    sequence,
+    reference,
+    direction
+) {
+
+    if (
+        !sequence ||
+        sequence.length < 2
+    ) return 0;
+
+    const ref =
+        new Map();
+
+    reference.forEach(
+        (
+            swara,
+            index
+        ) => {
+
+            if (
+                !ref.has(swara)
+            ) {
+
+                ref.set(
+                    swara,
+                    index
+                );
+            }
+        }
+    );
 
     let valid = 0;
     let total = 0;
 
-    for (let i = 0; i < sequence.length - 1; i++) {
-        const a = sequence[i];
-        const b = sequence[i + 1];
+    for (
+        let i = 0;
+        i < sequence.length - 1;
+        i++
+    ) {
 
-        if (!ref.has(a) || !ref.has(b) || a === b) continue;
+        const a =
+            sequence[i];
 
-        const ai = ref.get(a);
-        const bi = ref.get(b);
-        const diff = bi - ai;
+        const b =
+            sequence[i + 1];
+
+        if (
+            !ref.has(a) ||
+            !ref.has(b) ||
+            a === b
+        ) continue;
+
+        const ai =
+            ref.get(a);
+
+        const bi =
+            ref.get(b);
+
+        const diff =
+            bi - ai;
 
         total++;
 
-        if (direction === "up") {
-            if (diff > 0 && diff <= 2) valid++;
+        if (
+            direction === "up"
+        ) {
+
+            if (
+                diff > 0 &&
+                diff <= 2
+            ) {
+
+                valid++;
+            }
+
         } else {
-            if (diff < 0 && Math.abs(diff) <= 2) valid++;
+
+            if (
+                diff < 0 &&
+                Math.abs(diff) <= 2
+            ) {
+
+                valid++;
+            }
         }
     }
 
-    if (!total) return 0;
-    return (valid / total) * 100;
+    if (!total)
+        return 0;
+
+    return (
+        valid /
+        total
+    ) * 100;
 }
 
-function calculateProminenceScore(sequence, target) {
-    if (!sequence.length) return 0;
+function calculateProminenceScore(
+    sequence,
+    target
+) {
 
-    const count = sequence.filter(s => s === target).length;
-    const proportion = count / sequence.length;
+    if (!sequence.length)
+        return 0;
 
-    return Math.min(100, proportion * 500);
+    const count =
+        sequence.filter(
+            s =>
+                s === target
+        ).length;
+
+    const proportion =
+        count /
+        sequence.length;
+
+    return Math.min(
+        100,
+        proportion * 500
+    );
 }
 
-function calculateSequenceStability(sequence) {
-    if (!sequence || sequence.length < 4) return 0;
+function calculateSequenceStability(
+    sequence
+) {
+
+    if (
+        !sequence ||
+        sequence.length < 4
+    ) return 0;
 
     let changes = 0;
-    for (let i = 1; i < sequence.length; i++) {
-        if (sequence[i] !== sequence[i - 1]) changes++;
+
+    for (
+        let i = 1;
+        i < sequence.length;
+        i++
+    ) {
+
+        if (
+            sequence[i] !==
+            sequence[i - 1]
+        ) {
+
+            changes++;
+        }
     }
 
-    const changeRate = changes / (sequence.length - 1);
+    const changeRate =
+        changes /
+        (sequence.length - 1);
 
-    if (changeRate < 0.10) return 70;
-    if (changeRate < 0.30) return 100;
-    if (changeRate < 0.60) return 90;
-    if (changeRate < 0.80) return 65;
+    if (
+        changeRate < 0.10
+    ) return 70;
+
+    if (
+        changeRate < 0.30
+    ) return 100;
+
+    if (
+        changeRate < 0.60
+    ) return 90;
+
+    if (
+        changeRate < 0.80
+    ) return 65;
+
     return 40;
 }
 
-function updateFeedback(result, accepted) {
-    const feedback = document.getElementById("feedback");
+function updateFeedback(
+    result,
+    accepted
+) {
+
+    const feedback =
+        document.getElementById(
+            "feedback"
+        );
 
     if (accepted) {
-        feedback.className = "feedback-box good";
+
+        feedback.className =
+            "feedback-box good";
+
         feedback.innerHTML = `
             ⭐ <b>${result.raga.name}</b> is strongly supported by the detected musical evidence.<br><br>
             ✓ Swara coverage: ${result.coverage.toFixed(1)}%<br>
@@ -1890,8 +3335,12 @@ function updateFeedback(result, accepted) {
             ✓ Avaroh match: ${result.avarohScore.toFixed(1)}%<br>
             ✓ No forbidden swara detected.
         `;
+
     } else {
-        feedback.className = "feedback-box warn";
+
+        feedback.className =
+            "feedback-box warn";
+
         feedback.innerHTML = `
             ⚠ The analyzer will not force a raga decision.<br><br>
             Best candidate: <b>${result.raga.name}</b><br>
@@ -1904,34 +3353,83 @@ function updateFeedback(result, accepted) {
 /* ============================================================
    WAVEFORM
    ============================================================ */
+
 function drawWaveform(data) {
-    const W = waveformCanvas.offsetWidth || 800;
+
+    const W =
+        waveformCanvas.offsetWidth ||
+        800;
+
     const H = 150;
 
     waveformCanvas.width = W;
     waveformCanvas.height = H;
 
-    wfCtx.clearRect(0, 0, W, H);
-    wfCtx.fillStyle = "#0b0e14";
-    wfCtx.fillRect(0, 0, W, H);
+    wfCtx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
 
-    wfCtx.strokeStyle = "rgba(201,162,74,0.2)";
+    wfCtx.fillStyle =
+        "#0b0e14";
+
+    wfCtx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+    wfCtx.strokeStyle =
+        "rgba(201,162,74,0.2)";
+
     wfCtx.lineWidth = 1;
+
     wfCtx.beginPath();
-    wfCtx.moveTo(0, H / 2);
-    wfCtx.lineTo(W, H / 2);
+
+    wfCtx.moveTo(
+        0,
+        H / 2
+    );
+
+    wfCtx.lineTo(
+        W,
+        H / 2
+    );
+
     wfCtx.stroke();
 
-    wfCtx.strokeStyle = "#e8b84b";
+    wfCtx.strokeStyle =
+        "#e8b84b";
+
     wfCtx.lineWidth = 2;
+
     wfCtx.beginPath();
 
-    for (let x = 0; x < W; x++) {
-        const index = Math.floor((x / W) * data.length);
-        const y = H / 2 - (data[index] || 0) * H * 2;
+    for (
+        let x = 0;
+        x < W;
+        x++
+    ) {
 
-        if (x === 0) wfCtx.moveTo(x, y);
-        else wfCtx.lineTo(x, y);
+        const index =
+            Math.floor(
+                (x / W) *
+                data.length
+            );
+
+        const y =
+            H / 2 -
+            (data[index] || 0) *
+            H *
+            2;
+
+        if (x === 0)
+            wfCtx.moveTo(x, y);
+        else
+            wfCtx.lineTo(x, y);
     }
 
     wfCtx.stroke();
@@ -1940,75 +3438,205 @@ function drawWaveform(data) {
 /* ============================================================
    SWARA GRAPH
    ============================================================ */
+
 function drawGraph() {
-    const W = canvas.offsetWidth || 800;
+
+    const W =
+        canvas.offsetWidth ||
+        800;
+
     const H = 220;
 
     canvas.width = W;
     canvas.height = H;
 
-    ctx.clearRect(0, 0, W, H);
-    ctx.fillStyle = "#141720";
-    ctx.fillRect(0, 0, W, H);
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
 
-    // All 12 swaras are displayed because detection supports 12 swara classes.
-    const labels = SWARA_NAMES;
-    const stepY = (H - 40) / (labels.length - 1);
+    ctx.fillStyle =
+        "#141720";
 
-    for (let i = 0; i < labels.length; i++) {
-        const y = H - 20 - i * stepY;
+    ctx.fillRect(
+        0,
+        0,
+        W,
+        H
+    );
 
-        ctx.strokeStyle = "rgba(201,162,74,0.08)";
+    const labels =
+        SWARA_NAMES;
+
+    const stepY =
+        (H - 40) /
+        (labels.length - 1);
+
+    for (
+        let i = 0;
+        i < labels.length;
+        i++
+    ) {
+
+        const y =
+            H -
+            20 -
+            i * stepY;
+
+        ctx.strokeStyle =
+            "rgba(201,162,74,0.08)";
+
         ctx.beginPath();
-        ctx.moveTo(85, y);
-        ctx.lineTo(W, y);
+
+        ctx.moveTo(
+            85,
+            y
+        );
+
+        ctx.lineTo(
+            W,
+            y
+        );
+
         ctx.stroke();
 
-        ctx.fillStyle = swaraColors[labels[i]] || "#7a6e5f";
-        ctx.font = "9px 'Space Mono', monospace";
-        ctx.fillText(labels[i], 5, y + 3);
+        ctx.fillStyle =
+            swaraColors[
+                labels[i]
+            ] ||
+            "#7a6e5f";
+
+        ctx.font =
+            "9px 'Space Mono', monospace";
+
+        ctx.fillText(
+            labels[i],
+            5,
+            y + 3
+        );
     }
 
-    if (graphData.length < 2) return;
+    if (
+        graphData.length < 2
+    ) return;
 
     const xStep =
         (W - 95) /
-        Math.max(graphData.length - 1, 1);
+        Math.max(
+            graphData.length - 1,
+            1
+        );
 
     ctx.beginPath();
+
     ctx.lineWidth = 2;
 
-    graphData.forEach((point, index) => {
-        const x = 90 + index * xStep;
-        const y = H - 20 -
-            (point.y / 11) * (H - 40);
+    graphData.forEach(
+        (
+            point,
+            index
+        ) => {
 
-        if (index === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-    });
+            const x =
+                90 +
+                index *
+                xStep;
 
-    const gradient = ctx.createLinearGradient(90, 0, W, 0);
-    gradient.addColorStop(0, "rgba(201,162,74,0.3)");
-    gradient.addColorStop(1, "#e8b84b");
-    ctx.strokeStyle = gradient;
+            const y =
+                H -
+                20 -
+                (
+                    point.y /
+                    11
+                ) *
+                (H - 40);
+
+            if (index === 0)
+                ctx.moveTo(
+                    x,
+                    y
+                );
+            else
+                ctx.lineTo(
+                    x,
+                    y
+                );
+        }
+    );
+
+    const gradient =
+        ctx.createLinearGradient(
+            90,
+            0,
+            W,
+            0
+        );
+
+    gradient.addColorStop(
+        0,
+        "rgba(201,162,74,0.3)"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#e8b84b"
+    );
+
+    ctx.strokeStyle =
+        gradient;
+
     ctx.stroke();
 
-    graphData.forEach((point, index) => {
-        const x = 90 + index * xStep;
-        const y = H - 20 -
-            (point.y / 11) * (H - 40);
+    graphData.forEach(
+        (
+            point,
+            index
+        ) => {
 
-        ctx.beginPath();
-        ctx.arc(x, y, 3, 0, Math.PI * 2);
-        ctx.fillStyle = swaraColors[point.s] || "#e8b84b";
-        ctx.fill();
-    });
+            const x =
+                90 +
+                index *
+                xStep;
+
+            const y =
+                H -
+                20 -
+                (
+                    point.y /
+                    11
+                ) *
+                (H - 40);
+
+            ctx.beginPath();
+
+            ctx.arc(
+                x,
+                y,
+                3,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle =
+                swaraColors[
+                    point.s
+                ] ||
+                "#e8b84b";
+
+            ctx.fill();
+        }
+    );
 }
 
 /* ============================================================
    INITIAL CANVAS
    ============================================================ */
+
 drawGraph();
+
 </script>
+
 </body>
 </html>

@@ -2870,7 +2870,7 @@ function updateRaga() {
             <b>Confidence:</b> ${finalConfidence.toFixed(1)}% <br>
             <b>Coverage:</b> ${bestRecord.coverage.toFixed(1)}% <br>
             <b>Pakad:</b> ${bestRecord.pakadScore.toFixed(1)}% <br><br>
-            ⚠ The analyzer is waiting for stronger melodic evidence.
+          
         `;
 
         updateFeedback(
@@ -3342,7 +3342,7 @@ function updateFeedback(
             "feedback-box warn";
 
         feedback.innerHTML = `
-            ⚠ The analyzer will not force a raga decision.<br><br>
+           
             Best candidate: <b>${result.raga.name}</b><br>
             Confidence: ${result.confidence.toFixed(1)}%<br><br>
             Continue with a longer, cleaner melodic passage for stronger identification.

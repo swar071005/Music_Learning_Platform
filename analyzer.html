@@ -2802,7 +2802,7 @@ function updateRaga() {
         document.getElementById(
             "raag-info"
         ).innerHTML = `
-            <b>Best candidate:</b> ${bestRecord.raga.name} <br>
+            <b>Raga Identification:</b> ${bestRecord.raga.name} <br>
             <b>Confidence:</b> ${finalConfidence.toFixed(1)}% <br>
             <b>Coverage:</b> ${bestRecord.coverage.toFixed(1)}% <br>
             <b>Pakad:</b> ${bestRecord.pakadScore.toFixed(1)}% <br><br>
@@ -3279,7 +3279,7 @@ function updateFeedback(
 
         feedback.innerHTML = `
            
-            Best candidate: <b>${result.raga.name}</b><br>
+          Raga Identification: <b>${result.raga.name}</b><br>
             Confidence: ${result.confidence.toFixed(1)}%<br><br>
             Continue with a longer, cleaner melodic passage for stronger identification.
         `;
